@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LUMINA — AI Skin Intelligence",
-  description: "Advanced AI-powered skin analysis. Know your skin. Transform your routine.",
+  title: "G-Blendz — Precision Cuts & Clean Blends | Plano, TX",
+  description: "Professional barbering services in Plano, TX. Clean fades, tapers, beard trims, line-ups, kids cuts. Mobile/in-home services available. Book at 469-648-7481.",
 };
 
 export default function RootLayout({
