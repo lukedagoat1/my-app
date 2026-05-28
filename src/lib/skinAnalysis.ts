@@ -105,45 +105,48 @@ export function determineSkinType(
 ): { type: SkinType; label: string; description: string; concerns: string[] } {
   const score: Record<SkinType, number> = { oily: 0, dry: 0, combination: 0, sensitive: 0, normal: 0 }
 
-  if (answers.q1 === 'a') score.oily += 3
-  if (answers.q1 === 'b') score.dry += 3
-  if (answers.q1 === 'c') score.combination += 3
-  if (answers.q1 === 'd') score.normal += 2
+  // q1: age
+  if (answers.q1 === 'a') score.oily += 1                      // under 20 — tends oilier
+  if (answers.q1 === 'c') score.normal += 1                    // 30s — often stabilises
+  if (answers.q1 === 'd') { score.dry += 1; score.sensitive += 1 } // 40+ — drier, more reactive
 
-  if (answers.q2 === 'a') { score.oily += 2; score.sensitive += 1 }
-  if (answers.q2 === 'b') score.oily += 1
-  if (answers.q2 === 'c') score.normal += 1
-  if (answers.q2 === 'd') { score.dry += 1; score.normal += 1 }
+  // q2: skin feel hours after cleansing
+  if (answers.q2 === 'a') score.oily += 3
+  if (answers.q2 === 'b') score.dry += 3
+  if (answers.q2 === 'c') score.combination += 3
+  if (answers.q2 === 'd') score.normal += 2
 
-  if (answers.q3 === 'a') score.oily += 2
-  if (answers.q3 === 'b') { score.dry += 1; score.normal += 1 }
-  if (answers.q3 === 'c') score.combination += 2
-  if (answers.q3 === 'd') score.normal += 2
+  // q3: biggest concern
+  if (answers.q3 === 'a') { score.oily += 2; score.sensitive += 1 }
+  if (answers.q3 === 'b') score.dry += 2
+  if (answers.q3 === 'c') score.sensitive += 3
+  if (answers.q3 === 'd') { score.combination += 1; score.normal += 1 }
 
-  if (answers.q4 === 'a') score.sensitive += 4
-  if (answers.q4 === 'b') score.normal += 1
-  if (answers.q4 === 'c') score.sensitive += 1
+  // q4: skip moisturiser
+  if (answers.q4 === 'a') score.oily += 2
+  if (answers.q4 === 'b') score.dry += 2
+  if (answers.q4 === 'c') score.combination += 2
+  if (answers.q4 === 'd') score.normal += 2
 
-  if (answers.q5 === 'a') score.oily += 3
-  if (answers.q5 === 'b') score.dry += 2
-  if (answers.q5 === 'c') score.combination += 2
-  if (answers.q5 === 'd') score.normal += 2
+  // q5: reaction to new products
+  if (answers.q5 === 'a') score.sensitive += 4
+  if (answers.q5 === 'b') score.sensitive += 1
+  if (answers.q5 === 'c') score.normal += 1
+  if (answers.q5 === 'd') { score.oily += 1; score.normal += 1 }
 
-  if (answers.q6 === 'a') { score.combination += 1; score.dry += 1 }
-  if (answers.q6 === 'b') score.dry += 3
-  if (answers.q6 === 'c') score.normal += 1
-  if (answers.q6 === 'd') score.oily += 1
+  // q6: end of day look
+  if (answers.q6 === 'a') score.oily += 3
+  if (answers.q6 === 'b') score.dry += 2
+  if (answers.q6 === 'c') score.combination += 2
+  if (answers.q6 === 'd') score.normal += 2
 
-  if (answers.q7 === 'a') score.oily += 1
+  // q7: cold/windy weather
+  if (answers.q7 === 'a') score.sensitive += 2
   if (answers.q7 === 'b') score.dry += 2
-  if (answers.q7 === 'c') { score.oily += 1; score.combination += 1 }
-  if (answers.q7 === 'd') score.normal += 2
+  if (answers.q7 === 'c') score.normal += 1
+  if (answers.q7 === 'd') score.oily += 1
 
-  if (answers.q8 === 'a') score.oily += 2
-  if (answers.q8 === 'b') score.dry += 2
-  if (answers.q8 === 'c') score.sensitive += 2
-  if (answers.q8 === 'd') score.normal += 1
-
+  // Camera metrics boost
   if (metrics) {
     if (metrics.oiliness > 68) score.oily += 2
     else if (metrics.oiliness < 32) score.dry += 1
@@ -155,11 +158,12 @@ export function determineSkinType(
   const type = (Object.entries(score).sort((a, b) => b[1] - a[1])[0][0]) as SkinType
 
   const concerns: string[] = []
-  if (answers.q2 === 'a' || answers.q2 === 'b') concerns.push('Acne & Breakouts')
-  if (score.dry > 4 || answers.q6 === 'b') concerns.push('Dryness & Dehydration')
-  if (answers.q4 === 'a') concerns.push('Sensitivity & Redness')
-  if (score.oily > 4) concerns.push('Excess Oil & Shine')
-  if (answers.q8 === 'd') concerns.push('Uneven Texture & Tone')
+  if (answers.q3 === 'a' || score.oily > 5) concerns.push('Acne & Breakouts')
+  if (answers.q3 === 'b' || score.dry > 4) concerns.push('Dryness & Dehydration')
+  if (answers.q3 === 'c' || answers.q5 === 'a') concerns.push('Sensitivity & Redness')
+  if (score.oily > 5) concerns.push('Excess Oil & Shine')
+  if (answers.q3 === 'd') concerns.push('Uneven Texture & Tone')
+  if (answers.q1 === 'd') concerns.push('Anti-Aging & Firmness')
   if (metrics && metrics.redness > 52) concerns.push('Visible Redness')
 
   const descriptions: Record<SkinType, string> = {
