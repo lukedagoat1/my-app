@@ -41,7 +41,7 @@ const projects: Project[] = [
     category: 'Mobile car detailing · Allen, TX',
     result: 'Booking-focused site with interactive before/after sliders and instant lead texts.',
     img: '/work/crystal-detailing.jpg',
-    href: '/',
+    href: '/crystal',
     gradient: 'from-sky-500 to-indigo-600',
   },
   {

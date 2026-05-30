@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Each Vercel project sets SITE to its own value so the root URL
-// redirects to the correct app. Existing paths (e.g. /gblendz, /lucent)
-// always work regardless of this variable.
+// Each Vercel project sets SITE so the root URL shows the right app.
+// Lumina is the default root (no SITE var needed for that project).
 const SITE_ROUTES: Record<string, string> = {
-  lucent:   '/lucent',
-  gblendz:  '/gblendz',
-  lumina:   '/quiz',
+  lucent:  '/lucent',
+  gblendz: '/gblendz',
+  crystal: '/crystal',
 }
 
 export function middleware(request: NextRequest) {
