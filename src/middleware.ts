@@ -11,11 +11,10 @@ const SITE_ROUTES: Record<string, string> = {
 }
 
 export function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname !== '/') return NextResponse.next()
   const site = process.env.SITE
-  if (site && SITE_ROUTES[site] && request.nextUrl.pathname === '/') {
-    return NextResponse.redirect(new URL(SITE_ROUTES[site], request.url))
-  }
-  return NextResponse.next()
+  const target = (site && SITE_ROUTES[site]) ? SITE_ROUTES[site] : SITE_ROUTES.lumina
+  return NextResponse.redirect(new URL(target, request.url))
 }
 
 export const config = {
