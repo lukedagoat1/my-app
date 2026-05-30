@@ -7,7 +7,7 @@ const SITE_ROUTES: Record<string, string> = {
   lucent:  '/lucent',
   gblendz: '/gblendz',
   crystal: '/crystal',
-  lumina:  '/lumina',
+  lumina:  '/quiz',
 }
 
 export function middleware(request: NextRequest) {
