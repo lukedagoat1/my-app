@@ -47,7 +47,7 @@ const faqs = [
   },
   {
     q: 'How do I book an appointment?',
-    a: 'Call or text 469-648-7481. We respond quickly and can usually get you in same-day or next-day.',
+    a: 'Call or text 111-111-1111. We respond quickly and can usually get you in same-day or next-day.',
   },
   {
     q: 'What hair types do you work with?',
@@ -82,7 +82,7 @@ function NavBar() {
             </a>
           ))}
           <a
-            href="tel:4696487481"
+            href="tel:1111111111"
             className="ml-2 px-5 py-2 rounded-full text-sm font-semibold bg-amber-400 text-black hover:bg-amber-300 transition-colors"
           >
             Book Now
@@ -109,11 +109,11 @@ function NavBar() {
             </a>
           ))}
           <a
-            href="tel:4696487481"
+            href="tel:1111111111"
             className="mt-2 px-5 py-2.5 rounded-full text-sm font-bold bg-amber-400 text-black text-center"
             onClick={() => setOpen(false)}
           >
-            Book Now — 469-648-7481
+            Book Now — 111-111-1111
           </a>
         </motion.div>
       )}
@@ -226,11 +226,11 @@ export default function GBlendz() {
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             <a
-              href="tel:4696487481"
+              href="tel:1111111111"
               className="flex items-center gap-2 px-8 py-4 rounded-full font-bold text-base text-black bg-amber-400 hover:bg-amber-300 transition-all hover:scale-105 shadow-lg shadow-amber-400/20"
             >
               <Phone className="w-4 h-4" />
-              Book Now — 469-648-7481
+              Book Now — 111-111-1111
             </a>
             <a
               href="#services"
@@ -317,11 +317,11 @@ export default function GBlendz() {
             className="mt-10 text-center"
           >
             <a
-              href="tel:4696487481"
+              href="tel:1111111111"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-black bg-amber-400 hover:bg-amber-300 transition-all hover:scale-105"
             >
               <Phone className="w-4 h-4" />
-              Call to Book — 469-648-7481
+              Call to Book — 111-111-1111
             </a>
           </motion.div>
         </div>
@@ -437,7 +437,7 @@ export default function GBlendz() {
                 {
                   icon: <Phone className="w-5 h-5 text-amber-400" />,
                   title: 'Book by Call or Text',
-                  desc: '469-648-7481 — fast response, flexible scheduling.',
+                  desc: '111-111-1111 — fast response, flexible scheduling.',
                 },
                 {
                   icon: <Clock className="w-5 h-5 text-amber-400" />,
@@ -525,11 +525,11 @@ export default function GBlendz() {
             </p>
 
             <a
-              href="tel:4696487481"
+              href="tel:1111111111"
               className="inline-flex items-center justify-center gap-2 px-10 py-4 rounded-full font-black text-lg text-black bg-amber-400 hover:bg-amber-300 transition-all hover:scale-105 shadow-xl shadow-amber-400/20"
             >
               <Phone className="w-5 h-5" />
-              469-648-7481
+              111-111-1111
             </a>
 
             <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-white/40">
@@ -560,8 +560,8 @@ export default function GBlendz() {
           <p className="text-xs text-white/30 text-center">
             Precision Cuts · Clean Blends · Plano, TX 75074
           </p>
-          <a href="tel:4696487481" className="text-xs text-white/40 hover:text-amber-400 transition-colors flex items-center gap-1">
-            <Phone className="w-3 h-3" /> 469-648-7481
+          <a href="tel:1111111111" className="text-xs text-white/40 hover:text-amber-400 transition-colors flex items-center gap-1">
+            <Phone className="w-3 h-3" /> 111-111-1111
           </a>
         </div>
       </footer>

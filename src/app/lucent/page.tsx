@@ -45,11 +45,11 @@ const projects: Project[] = [
     gradient: 'from-sky-500 to-indigo-600',
   },
   {
-    name: 'G-Blendz',
+    name: 'Demo',
     category: 'Brand site',
     result: 'Bold, modern storefront built to showcase the brand and drive orders.',
     img: '/work/gblendz.jpg',
-    href: 'https://gblendz.vercel.app/gblendz',
+    href: 'https://gblendz.vercel.app',
     gradient: 'from-amber-500 to-rose-600',
   },
   {
@@ -166,7 +166,7 @@ export default function LucentPage() {
                 <span className="h-4 w-4 rounded-full bg-sky-400" />
                 <span className="h-4 w-4 rounded-full bg-rose-400" />
               </span>
-              Trusted by Crystal Detailing, G-Blendz & more
+              Trusted by Crystal Detailing & more
             </motion.a>
             <motion.h1 variants={fadeUp} className="font-heading text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
               Websites that win you{' '}
