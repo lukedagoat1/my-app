@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAppStore } from '@/lib/store'
 import { determineSkinType } from '@/lib/skinAnalysis'
+import { AdBanner } from '@/components/AdBanner'
 
 const QUESTIONS = [
   {
@@ -137,6 +138,10 @@ export default function QuizPage() {
       <div className="h-0.5 bg-white/5">
         <motion.div className="h-full" style={{ background: 'linear-gradient(90deg, #d4a847, #e8c4d0)' }}
           animate={{ width: `${progress}%` }} transition={{ duration: 0.4 }} />
+      </div>
+
+      <div className="px-6 pt-4">
+        <AdBanner slot="quiz" />
       </div>
 
       <div className="flex-1 flex items-center justify-center px-6 py-10">
