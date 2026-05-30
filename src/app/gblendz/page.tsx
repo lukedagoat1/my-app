@@ -20,7 +20,7 @@ const services = [
   { name: 'Beard Trim & Line-Up', price: 'From $15', desc: 'Defined edges and a clean sculpt.' },
   { name: 'Full Cut + Beard', price: 'From $35', desc: 'Complete look — hair and beard together.' },
   { name: "Kids Cut", price: 'From $15', desc: 'Patient, precise cuts for the little ones.' },
-  { name: 'Mobile / In-Home', price: 'Call for pricing', desc: 'G-Blendz comes to you — on your schedule.' },
+  { name: 'Mobile / In-Home', price: 'Call for pricing', desc: 'Demo Barbershop comes to you — on your schedule.' },
 ]
 
 const reasons = [
@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     q: 'Do you offer mobile services?',
-    a: 'Absolutely. G-Blendz offers mobile and in-home services. Call to discuss availability and pricing.',
+    a: 'Absolutely. Demo Barbershop offers mobile and in-home services. Call to discuss availability and pricing.',
   },
   {
     q: 'How do I book an appointment?',
@@ -69,7 +69,7 @@ function NavBar() {
       <div className="max-w-6xl mx-auto px-5 flex items-center justify-between h-16">
         <a href="#" className="flex items-center gap-2">
           <Scissors className="w-5 h-5 text-amber-400" />
-          <span className="font-black text-xl tracking-widest text-white uppercase">G-Blendz</span>
+          <span className="font-black text-xl tracking-widest text-white uppercase">Demo Barbershop</span>
         </a>
         <div className="hidden md:flex items-center gap-6">
           {links.map((l) => (
@@ -150,7 +150,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   )
 }
 
-export default function GBlendz() {
+export default function DemoBarbershop() {
   const heroRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%'])
@@ -207,7 +207,7 @@ export default function GBlendz() {
               animation: 'g-shimmer 5s linear infinite',
             }}
           >
-            G-BLENDZ
+            DEMO BARBERSHOP
           </motion.h1>
 
           <motion.p
@@ -377,7 +377,7 @@ export default function GBlendz() {
             viewport={{ once: true }}
             className="text-center mt-8 text-sm text-white/30"
           >
-            Follow G-Blendz on social media for the latest cuts and styles
+            Follow Demo Barbershop on social media for the latest cuts and styles
           </motion.p>
         </div>
       </section>
@@ -396,14 +396,14 @@ export default function GBlendz() {
                 Precision is the <span className="text-amber-400">standard.</span>
               </h2>
               <p className="text-white/50 leading-relaxed mb-6">
-                G-Blendz is built on one principle — every client walks out looking their best. Whether
+                Demo Barbershop is built on one principle — every client walks out looking their best. Whether
                 it's a clean skin fade, a crisp beard line-up, or a fresh kids cut, the attention to
                 detail never wavers. All hair textures are welcome and treated with the same level of
                 care and expertise.
               </p>
               <p className="text-white/50 leading-relaxed mb-8">
                 Now cutting at Daniel's Beauty Salon in Plano, TX — and available for mobile and
-                in-home appointments. No commute needed. G-Blendz brings the barbershop experience
+                in-home appointments. No commute needed. Demo Barbershop brings the barbershop experience
                 directly to you.
               </p>
 
@@ -471,7 +471,7 @@ export default function GBlendz() {
             ))}
           </div>
           <blockquote className="text-xl md:text-2xl font-semibold text-white/80 leading-relaxed max-w-2xl mx-auto">
-            "Best fade I've ever gotten. Clean, precise, and on point every single time. G-Blendz is the real deal."
+            "Best fade I've ever gotten. Clean, precise, and on point every single time. Demo Barbershop is the real deal."
           </blockquote>
           <p className="mt-4 text-sm text-white/30">— Happy Client, Plano TX</p>
         </div>
@@ -555,7 +555,7 @@ export default function GBlendz() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <Scissors className="w-4 h-4 text-amber-400" />
-            <span className="font-black text-lg tracking-widest text-white uppercase">G-Blendz</span>
+            <span className="font-black text-lg tracking-widest text-white uppercase">Demo Barbershop</span>
           </div>
           <p className="text-xs text-white/30 text-center">
             Precision Cuts · Clean Blends · Plano, TX 75074

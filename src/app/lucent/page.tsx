@@ -45,11 +45,10 @@ const projects: Project[] = [
     gradient: 'from-sky-500 to-indigo-600',
   },
   {
-    name: 'Demo',
+    name: 'Demo Barbershop',
     category: 'Brand site',
     result: 'Bold, modern storefront built to showcase the brand and drive orders.',
     img: '/work/gblendz.jpg',
-    href: 'https://gblendz.vercel.app',
     gradient: 'from-amber-500 to-rose-600',
   },
   {
