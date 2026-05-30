@@ -1,11 +1,11 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useAppStore } from '@/lib/store'
 import { determineSkinType, getRoutine } from '@/lib/skinAnalysis'
 import { ParticleField } from '@/components/ParticleField'
-import type { SkinType, SkinMetrics } from '@/lib/store'
+import type { SkinType, SkinMetrics, ScanRecord } from '@/lib/store'
 
 const typeColors: Record<SkinType, { from: string; to: string; badge: string }> = {
   oily:        { from: '#7dd3b0', to: '#4ecca3', badge: 'rgba(77,204,163,0.15)' },
@@ -212,8 +212,9 @@ function MetricBar({ label, value, invert = false }: { label: string; value: num
 
 export default function ResultsPage() {
   const router = useRouter()
-  const { skinMetrics, quizAnswers, skinType: storedType, concerns: storedConcerns, reset } = useAppStore()
+  const { skinMetrics, quizAnswers, skinType: storedType, concerns: storedConcerns, reset, saveScanToHistory, captures } = useAppStore()
   const [tab, setTab] = useState<'morning' | 'evening'>('morning')
+  const savedRef = useRef(false)
 
   const fallbackMetrics = skinMetrics ?? { oiliness: 50, hydration: 50, redness: 30, texture: 70, uniformity: 70 }
   const result   = determineSkinType(quizAnswers, fallbackMetrics)
@@ -221,6 +222,22 @@ export default function ResultsPage() {
   const concerns = storedConcerns.length > 0 ? storedConcerns : result.concerns
   const routine  = getRoutine(skinType)
   const colors   = typeColors[skinType] ?? typeColors.normal
+
+  useEffect(() => {
+    if (!savedRef.current && skinType) {
+      savedRef.current = true
+      const record: ScanRecord = {
+        id: Date.now().toString(),
+        date: new Date().toISOString(),
+        skinType,
+        metrics: fallbackMetrics,
+        concerns: concerns.slice(0, 4),
+        thumbnail: captures[0] ?? '',
+      }
+      saveScanToHistory(record)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [skinType, fallbackMetrics])
 
   if (!skinType) {
     return (
@@ -361,6 +378,10 @@ export default function ResultsPage() {
             className="px-10 py-4 rounded-full font-semibold text-[#06060f] text-sm"
             style={{ background: 'linear-gradient(135deg, #d4a847, #e8cc70, #e8c4d0)' }}>
             Analyse Again
+          </button>
+          <button onClick={() => router.push('/history')}
+            className="px-10 py-4 rounded-full border border-white/15 text-white/50 hover:text-white hover:border-white/30 transition-all text-sm">
+            Scan History
           </button>
           <button onClick={() => router.push('/')}
             className="px-10 py-4 rounded-full border border-white/15 text-white/50 hover:text-white hover:border-white/30 transition-all text-sm">

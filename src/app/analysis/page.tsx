@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAppStore } from '@/lib/store'
 import { analyzeImageData, averageMetrics } from '@/lib/skinAnalysis'
+import { AdBanner } from '@/components/AdBanner'
 
 const STEPS = [
   { id: 'forward', title: 'Face Forward', sub: 'Centre your face in the oval', arrow: null, arrowDir: null },
@@ -32,7 +33,14 @@ export default function AnalysisPage() {
   const [cameraReady, setCameraReady] = useState(false)
   const [processing,  setProcessing]  = useState(false)
 
-  const { addCapture, addMetrics, setSkinMetrics } = useAppStore()
+  const { freeScansUsed, isPremium, incrementFreeScansUsed, addCapture, addMetrics, setSkinMetrics } = useAppStore()
+
+  useEffect(() => {
+    if (freeScansUsed >= 1 && !isPremium) {
+      router.push('/paywall')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     async function startCam() {
@@ -73,7 +81,7 @@ export default function AnalysisPage() {
     ctx.clearRect(0, 0, w, h)
     const cx = w / 2
     const cy = h / 2
-    const rx = Math.min(w, h) * 0.24
+    const rx = Math.min(w, h) * 0.33
     const ry = rx * 1.55
 
     ctx.save()
@@ -187,7 +195,7 @@ export default function AnalysisPage() {
     ctx.restore()
 
     const cx = CAM_W / 2, cy = CAM_H / 2
-    const rx = Math.min(CAM_W, CAM_H) * 0.24
+    const rx = Math.min(CAM_W, CAM_H) * 0.33
     const ry = rx * 1.55
     const metrics = analyzeImageData(ctx.getImageData(0, 0, CAM_W, CAM_H), { cx, cy, rx, ry })
     addMetrics(metrics)
@@ -198,6 +206,7 @@ export default function AnalysisPage() {
       setTimeout(() => setStep(s => s + 1), 600)
     } else {
       setProcessing(true)
+      incrementFreeScansUsed()
       setTimeout(() => {
         const avg = averageMetrics(useAppStore.getState().metricsHistory)
         setSkinMetrics(avg)
@@ -270,6 +279,9 @@ export default function AnalysisPage() {
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center px-4 pb-6">
+        <div className="w-full max-w-sm mb-4">
+          <AdBanner slot="analysis" />
+        </div>
         <div className="relative w-full max-w-sm aspect-[3/4] rounded-2xl overflow-hidden bg-black/40 border border-white/8">
           <video ref={videoRef}
             className="absolute inset-0 w-full h-full object-cover"
