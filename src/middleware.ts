@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Each Vercel project sets SITE to serve the right app at the root URL.
-// Uses rewrite (not redirect) so the URL stays clean for clients.
+// SITE env var tells each Vercel project which app to serve at root.
+// Lumina is the natural root — no SITE var needed for that project.
+// DO NOT CHANGE THESE ROUTES.
 const SITE_ROUTES: Record<string, string> = {
   lucent:  '/lucent',
   gblendz: '/gblendz',
   crystal: '/crystal',
-  lumina:  '/lumina',
 }
 
 export function middleware(request: NextRequest) {
