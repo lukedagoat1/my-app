@@ -45,6 +45,13 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${sora.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8671336417372021"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-ink text-white overflow-x-hidden selection:bg-crystal/30">
         {children}
       </body>
