@@ -1,4 +1,5 @@
 'use client'
+// Sharp & Co. Barbershop — demo site
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef, useState } from 'react'
 import {
