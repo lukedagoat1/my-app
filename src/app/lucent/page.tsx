@@ -45,8 +45,8 @@ const projects: Project[] = [
     gradient: 'from-sky-500 to-indigo-600',
   },
   {
-    name: 'Demo Barbershop',
-    category: 'Brand site',
+    name: 'Sharp & Co.',
+    category: 'Demo — Brand site',
     result: 'Bold, modern storefront built to showcase the brand and drive orders.',
     img: '/work/gblendz.jpg',
     gradient: 'from-amber-500 to-rose-600',
