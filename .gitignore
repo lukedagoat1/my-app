@@ -46,7 +46,10 @@ cookies.txt
 *.json
 !package.json
 !package-lock.json
+!vercel.json
 jina_test.txt
 scripts/
 ,+
 .claude/
+
+.vercel
