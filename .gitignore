@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# scraping / dev test files
+cookies.txt
+*.html
+*.json
+!package.json
+!package-lock.json
+jina_test.txt
+scripts/
+,+
+.claude/

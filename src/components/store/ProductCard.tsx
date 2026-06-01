@@ -1,0 +1,86 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Check, Plus, SlidersHorizontal } from "lucide-react";
+import type { Product } from "@/lib/products";
+import { useCart, money } from "@/lib/cart";
+import { StarRating, ProductImage } from "./bits";
+
+export default function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
+  const add = useCart((s) => s.add);
+  const router = useRouter();
+  const [added, setAdded] = useState(false);
+  const discount = Math.round((1 - product.price / product.compareAt) * 100);
+  const hasVariation = !!product.variation;
+
+  function handleAdd(e: React.MouseEvent) {
+    e.preventDefault();
+    // Products with shade/color options need a choice — send to the detail page.
+    if (hasVariation) {
+      router.push(`/product/${product.id}`);
+      return;
+    }
+    add({ id: product.id, title: product.title, brand: product.brand, price: product.price, image: product.image });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1400);
+  }
+
+  return (
+    <Link
+      href={`/product/${product.id}`}
+      className="s-card-hover group flex flex-col overflow-hidden rounded-2xl border border-[var(--s-line)] bg-white s-shadow"
+      style={{ animationDelay: `${Math.min(index, 8) * 60}ms` }}
+    >
+      <div className="s-shine-wrap relative aspect-square overflow-hidden bg-[var(--s-cream-2)]">
+        <ProductImage
+          src={product.image}
+          alt={product.title}
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
+        />
+        <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+          {product.bestseller && (
+            <span className="rounded-full bg-[var(--s-wine)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+              Bestseller
+            </span>
+          )}
+          {discount > 0 && (
+            <span className="rounded-full bg-[var(--s-gold)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--s-ink)]">
+              Save {discount}%
+            </span>
+          )}
+        </div>
+        <button
+          onClick={handleAdd}
+          aria-label={hasVariation ? "Choose options" : "Add to cart"}
+          title={hasVariation ? "Choose options" : "Add to cart"}
+          className={`absolute bottom-3 right-3 grid h-10 w-10 place-items-center rounded-full shadow-lg transition-all duration-300 ${
+            added ? "bg-green-600 text-white" : "bg-white text-[var(--s-wine)] hover:bg-[var(--s-wine)] hover:text-white"
+          } translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100`}
+        >
+          {added ? <Check className="h-5 w-5 s-pop" /> : hasVariation ? <SlidersHorizontal className="h-[18px] w-[18px]" /> : <Plus className="h-5 w-5" />}
+        </button>
+      </div>
+
+      <div className="flex flex-1 flex-col p-4">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--s-wine)]">{product.brand}</span>
+          <StarRating value={product.rating} size={12} />
+        </div>
+        <h3 className="mt-1.5 line-clamp-2 flex-1 text-[13.5px] font-medium leading-snug text-[var(--s-ink)]">
+          {product.title}
+        </h3>
+        <div className="mt-3 flex items-end justify-between">
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-lg font-bold text-[var(--s-ink)]">{money(product.price)}</span>
+            {product.compareAt > product.price && (
+              <span className="text-xs text-[var(--s-ink-soft)] line-through">{money(product.compareAt)}</span>
+            )}
+          </div>
+          <span className="text-[10.5px] font-medium text-[var(--s-ink-soft)]">{product.sold}+ sold</span>
+        </div>
+      </div>
+    </Link>
+  );
+}
