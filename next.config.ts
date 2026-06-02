@@ -47,6 +47,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // bwip-js uses canvas/native Node.js modules — exclude from webpack bundling
+  serverExternalPackages: ["bwip-js"],
   async headers() {
     return [
       {
