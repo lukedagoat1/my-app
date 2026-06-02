@@ -20,6 +20,12 @@ export async function POST(req: NextRequest) {
       )
       .join("");
 
+    // Split address into street line and city/state/zip line for label display
+    // Format stored: "123 Main St[, Apt X], City, ST ZIP"
+    const addrParts = (order.address as string).split(",").map((s: string) => s.trim());
+    const labelLine2 = addrParts.slice(-2).join(", ");   // "City, ST ZIP"
+    const labelLine1 = addrParts.slice(0, -2).join(", "); // "123 Main St" or "123 Main St, Apt X"
+
     const html = `
 <!DOCTYPE html>
 <html>
@@ -32,10 +38,49 @@ export async function POST(req: NextRequest) {
     </div>
 
     <div style="padding:28px 32px;">
-      <h2 style="margin:0 0 12px;font-size:16px;color:#1a1a2e;">Customer</h2>
-      <p style="margin:0;font-size:14px;color:#555;">${order.name}<br>${order.email}<br>${order.address}</p>
 
-      <h2 style="margin:24px 0 12px;font-size:16px;color:#1a1a2e;">Items Ordered</h2>
+      <!-- ═══════════════════════ SHIPPING LABEL ═══════════════════════ -->
+      <div style="border:2.5px dashed #555;border-radius:10px;padding:20px 24px;margin-bottom:28px;">
+        <div style="text-align:center;font-size:11px;font-weight:700;letter-spacing:0.18em;color:#888;margin-bottom:16px;text-transform:uppercase;">
+          ✂&nbsp; Shipping Label — Print and attach to package &nbsp;✂
+        </div>
+
+        <!-- FROM row -->
+        <table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
+          <tr>
+            <td style="width:54px;font-size:11px;font-weight:700;color:#999;letter-spacing:0.08em;vertical-align:top;padding-top:3px;">FROM:</td>
+            <td style="font-size:13px;color:#444;line-height:1.6;">
+              <strong style="color:#111;">Sara&apos;s Trading Post</strong><br>
+              sarastradingpost@gmail.com
+            </td>
+          </tr>
+        </table>
+
+        <hr style="border:none;border-top:1.5px solid #ccc;margin:12px 0;" />
+
+        <!-- SHIP TO row -->
+        <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+          <tr>
+            <td style="width:54px;font-size:11px;font-weight:700;color:#999;letter-spacing:0.08em;vertical-align:top;padding-top:6px;">SHIP TO:</td>
+            <td style="line-height:1.5;">
+              <div style="font-size:22px;font-weight:900;color:#111;letter-spacing:0.01em;">${order.name}</div>
+              <div style="font-size:15px;font-weight:600;color:#222;margin-top:2px;">${labelLine1}</div>
+              <div style="font-size:15px;font-weight:600;color:#222;">${labelLine2}</div>
+              <div style="font-size:13px;color:#666;margin-top:4px;">${order.email}</div>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Order reference bar -->
+        <div style="background:#f0e8e8;border-radius:6px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;color:#888;font-weight:700;letter-spacing:0.1em;">ORDER REF</span>
+          <span style="font-family:monospace;font-size:18px;font-weight:900;letter-spacing:0.12em;color:#7c2d44;">${order.id}</span>
+          <span style="font-size:11px;color:#888;font-weight:700;letter-spacing:0.1em;">${money(order.totals.total)}</span>
+        </div>
+      </div>
+      <!-- ════════════════════════════════════════════════════════════════ -->
+
+      <h2 style="margin:0 0 12px;font-size:16px;color:#1a1a2e;">Items Ordered</h2>
       <table style="width:100%;border-collapse:collapse;font-size:14px;color:#333;">
         <thead>
           <tr>
@@ -58,7 +103,7 @@ export async function POST(req: NextRequest) {
       </table>
 
       <div style="margin-top:28px;background:#fdf6f0;border-radius:10px;padding:16px;font-size:13px;color:#7c2d44;border:1px solid #f0e8e8;">
-        <strong>⚡ Action needed:</strong> Pack and ship this order within 1 business day.<br>
+        <strong>⚡ Action needed:</strong> Print the shipping label above, pack the order, and ship within 1 business day.<br>
         Remember to include a free beauty sample 🎁 and update tracking once shipped.
       </div>
     </div>
