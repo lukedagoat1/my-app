@@ -3,26 +3,32 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 export type SalePrices = Record<string, number>;
+export type StockQtys = Record<string, number | undefined>;
 
-const SalePriceContext = createContext<SalePrices>({});
+interface StoreData { prices: SalePrices; stock: StockQtys }
 
-export function useSalePrices() {
-  return useContext(SalePriceContext);
-}
+const PriceCtx = createContext<SalePrices>({});
+const StockCtx = createContext<StockQtys>({});
+
+export function useSalePrices() { return useContext(PriceCtx); }
+export function useStock()      { return useContext(StockCtx); }
 
 export default function SalePriceProvider({ children }: { children: React.ReactNode }) {
   const [prices, setPrices] = useState<SalePrices>({});
+  const [stock, setStock]   = useState<StockQtys>({});
 
   useEffect(() => {
-    fetch("/api/sale-prices")
+    fetch("/api/store-data")
       .then((r) => r.json())
-      .then((data: SalePrices) => setPrices(data))
+      .then((d: StoreData) => { setPrices(d.prices ?? {}); setStock(d.stock ?? {}); })
       .catch(() => {});
   }, []);
 
   return (
-    <SalePriceContext.Provider value={prices}>
-      {children}
-    </SalePriceContext.Provider>
+    <PriceCtx.Provider value={prices}>
+      <StockCtx.Provider value={stock}>
+        {children}
+      </StockCtx.Provider>
+    </PriceCtx.Provider>
   );
 }

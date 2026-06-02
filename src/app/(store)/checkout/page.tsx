@@ -208,7 +208,7 @@ export default function CheckoutPage() {
     email: f.email,
     name: `${f.first} ${f.last}`,
     address: `${f.address}${f.apt ? ", " + f.apt : ""}, ${f.city}, ${f.state} ${f.zip}`,
-    items: lines.map((l) => ({ title: l.title, qty: l.qty, price: l.price, image: l.image, ...(l.variant ? { variant: l.variant } : {}) })),
+    items: lines.map((l) => ({ id: l.id, title: l.title, qty: l.qty, price: l.price, image: l.image, ...(l.variant ? { variant: l.variant } : {}) })),
     totals,
     date: new Date().toISOString(),
   };

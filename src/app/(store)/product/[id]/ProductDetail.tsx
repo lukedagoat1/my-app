@@ -10,6 +10,7 @@ import { useCart, money } from "@/lib/cart";
 import { StarRating, ProductImage } from "@/components/store/bits";
 import ProductCard from "@/components/store/ProductCard";
 import { reviews } from "@/lib/reviews";
+import { useSalePrices, useStock } from "@/components/store/SalePriceProvider";
 
 export default function ProductDetail({ product, related }: { product: Product; related: Product[] }) {
   const add = useCart((s) => s.add);
@@ -17,17 +18,25 @@ export default function ProductDetail({ product, related }: { product: Product; 
   const [added, setAdded] = useState(false);
   const [variant, setVariant] = useState<string | null>(null);
   const [needsVariant, setNeedsVariant] = useState(false);
-  const discount = Math.round((1 - product.price / product.compareAt) * 100);
-  const saving = product.compareAt - product.price;
+  const salePrices = useSalePrices();
+  const stockQtys = useStock();
+  const saleOverride = salePrices[product.id];
+  const stockQty = stockQtys[product.id];
+  const isSoldOut = stockQty === 0;
+  const effectivePrice = saleOverride && saleOverride < product.price ? saleOverride : product.price;
+  const effectiveCompareAt = saleOverride && saleOverride < product.price ? product.price : product.compareAt;
+  const discount = Math.round((1 - effectivePrice / effectiveCompareAt) * 100);
+  const saving = effectiveCompareAt - effectivePrice;
   const productReviews = reviews.slice(0, 3);
   const requiresVariant = !!product.variation;
 
   function handleAdd() {
+    if (isSoldOut) return;
     if (requiresVariant && !variant) {
       setNeedsVariant(true);
       return;
     }
-    add({ id: product.id, title: product.title, brand: product.brand, price: product.price, image: product.image, ...(variant ? { variant } : {}) }, qty);
+    add({ id: product.id, title: product.title, brand: product.brand, price: effectivePrice, image: product.image, ...(variant ? { variant } : {}) }, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
   }
@@ -81,12 +90,25 @@ export default function ProductDetail({ product, related }: { product: Product; 
             <span className="text-xs text-[var(--s-ink-soft)]">· {product.sold}+ sold</span>
           </div>
 
-          <div className="mt-5 flex items-end gap-3">
-            <span className="font-display text-4xl font-bold text-[var(--s-ink)]">{money(product.price)}</span>
-            {product.compareAt > product.price && (
+          <div className="mt-5 flex items-end gap-3 flex-wrap">
+            {isSoldOut ? (
+              <span className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-5 py-2 text-base font-bold text-gray-500">
+                Sold Out
+              </span>
+            ) : (
               <>
-                <span className="mb-1 text-lg text-[var(--s-ink-soft)] line-through">{money(product.compareAt)}</span>
-                <span className="mb-1.5 rounded-full bg-[var(--s-rose-soft)] px-2.5 py-1 text-xs font-bold text-[var(--s-wine)]">You save {money(saving)}</span>
+                <span className={`font-display text-4xl font-bold ${saleOverride && saleOverride < product.price ? "text-red-600" : "text-[var(--s-ink)]"}`}>
+                  {money(effectivePrice)}
+                </span>
+                {effectiveCompareAt > effectivePrice && (
+                  <>
+                    <span className="mb-1 text-lg text-[var(--s-ink-soft)] line-through">{money(effectiveCompareAt)}</span>
+                    <span className="mb-1.5 rounded-full bg-[var(--s-rose-soft)] px-2.5 py-1 text-xs font-bold text-[var(--s-wine)]">You save {money(saving)}</span>
+                  </>
+                )}
+                {stockQty !== undefined && stockQty > 0 && stockQty <= 5 && (
+                  <span className="mb-1.5 rounded-full bg-orange-100 px-2.5 py-1 text-xs font-bold text-orange-700">Only {stockQty} left!</span>
+                )}
               </>
             )}
           </div>
@@ -136,18 +158,27 @@ export default function ProductDetail({ product, related }: { product: Product; 
 
           {/* qty + add */}
           <div className="mt-7 flex flex-wrap items-center gap-3">
-            <div className="flex items-center rounded-full border border-[var(--s-line)] bg-white">
-              <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-12 w-12 place-items-center rounded-full text-[var(--s-ink)] hover:bg-[var(--s-cream-2)]" aria-label="Decrease"><Minus className="h-4 w-4" /></button>
-              <span className="w-10 text-center font-semibold">{qty}</span>
-              <button onClick={() => setQty((q) => q + 1)} className="grid h-12 w-12 place-items-center rounded-full text-[var(--s-ink)] hover:bg-[var(--s-cream-2)]" aria-label="Increase"><Plus className="h-4 w-4" /></button>
-            </div>
+            {!isSoldOut && (
+              <div className="flex items-center rounded-full border border-[var(--s-line)] bg-white">
+                <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-12 w-12 place-items-center rounded-full text-[var(--s-ink)] hover:bg-[var(--s-cream-2)]" aria-label="Decrease"><Minus className="h-4 w-4" /></button>
+                <span className="w-10 text-center font-semibold">{qty}</span>
+                <button onClick={() => setQty((q) => stockQty !== undefined ? Math.min(q + 1, stockQty) : q + 1)} className="grid h-12 w-12 place-items-center rounded-full text-[var(--s-ink)] hover:bg-[var(--s-cream-2)]" aria-label="Increase"><Plus className="h-4 w-4" /></button>
+              </div>
+            )}
             <button
               onClick={handleAdd}
+              disabled={isSoldOut}
               className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-full px-8 text-sm font-bold text-white transition-colors s-shadow ${
+                isSoldOut ? "cursor-not-allowed bg-gray-300 text-gray-500" :
                 added ? "bg-green-600" : "bg-[var(--s-wine)] hover:bg-[var(--s-wine-deep)]"
               }`}
             >
-              {added ? <><Check className="h-5 w-5 s-pop" /> Added to bag</> : <><ShoppingBag className="h-5 w-5" /> Add to bag · {money(product.price * qty)}</>}
+              {isSoldOut
+                ? "Sold Out — Check back soon"
+                : added
+                  ? <><Check className="h-5 w-5 s-pop" /> Added to bag</>
+                  : <><ShoppingBag className="h-5 w-5" /> Add to bag · {money(effectivePrice * qty)}</>
+              }
             </button>
             <button aria-label="Save" className="grid h-12 w-12 place-items-center rounded-full border border-[var(--s-line)] bg-white text-[var(--s-wine)] hover:bg-[var(--s-rose-soft)]"><Heart className="h-5 w-5" /></button>
           </div>

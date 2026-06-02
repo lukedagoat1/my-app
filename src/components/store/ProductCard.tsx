@@ -7,14 +7,17 @@ import { Check, Plus, SlidersHorizontal } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { useCart, money } from "@/lib/cart";
 import { StarRating, ProductImage } from "./bits";
-import { useSalePrices } from "./SalePriceProvider";
+import { useSalePrices, useStock } from "./SalePriceProvider";
 
 export default function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const add = useCart((s) => s.add);
   const router = useRouter();
   const [added, setAdded] = useState(false);
   const salePrices = useSalePrices();
+  const stockQtys = useStock();
   const saleOverride = salePrices[product.id];
+  const stockQty = stockQtys[product.id];          // undefined = untracked, 0 = sold out
+  const isSoldOut = stockQty === 0;
   const effectivePrice = saleOverride && saleOverride < product.price ? saleOverride : product.price;
   const effectiveCompareAt = saleOverride && saleOverride < product.price ? product.price : product.compareAt;
   const discount = Math.round((1 - effectivePrice / effectiveCompareAt) * 100);
@@ -44,33 +47,47 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
           alt={product.title}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
         />
+        {isSoldOut && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/70">
+            <span className="rounded-full bg-gray-800 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white">
+              Sold Out
+            </span>
+          </div>
+        )}
         <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-          {product.bestseller && (
+          {!isSoldOut && product.bestseller && (
             <span className="rounded-full bg-[var(--s-wine)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
               Bestseller
             </span>
           )}
-          {saleOverride && saleOverride < product.price && (
+          {!isSoldOut && saleOverride && saleOverride < product.price && (
             <span className="rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
               SALE
             </span>
           )}
-          {discount > 0 && (
+          {!isSoldOut && discount > 0 && (
             <span className="rounded-full bg-[var(--s-gold)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--s-ink)]">
               Save {discount}%
             </span>
           )}
+          {stockQty !== undefined && stockQty > 0 && stockQty <= 5 && (
+            <span className="rounded-full bg-orange-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+              Only {stockQty} left
+            </span>
+          )}
         </div>
-        <button
-          onClick={handleAdd}
-          aria-label={hasVariation ? "Choose options" : "Add to cart"}
-          title={hasVariation ? "Choose options" : "Add to cart"}
-          className={`absolute bottom-3 right-3 grid h-10 w-10 place-items-center rounded-full shadow-lg transition-all duration-300 ${
-            added ? "bg-green-600 text-white" : "bg-white text-[var(--s-wine)] hover:bg-[var(--s-wine)] hover:text-white"
-          } translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100`}
-        >
-          {added ? <Check className="h-5 w-5 s-pop" /> : hasVariation ? <SlidersHorizontal className="h-[18px] w-[18px]" /> : <Plus className="h-5 w-5" />}
-        </button>
+        {!isSoldOut && (
+          <button
+            onClick={handleAdd}
+            aria-label={hasVariation ? "Choose options" : "Add to cart"}
+            title={hasVariation ? "Choose options" : "Add to cart"}
+            className={`absolute bottom-3 right-3 grid h-10 w-10 place-items-center rounded-full shadow-lg transition-all duration-300 ${
+              added ? "bg-green-600 text-white" : "bg-white text-[var(--s-wine)] hover:bg-[var(--s-wine)] hover:text-white"
+            } translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100`}
+          >
+            {added ? <Check className="h-5 w-5 s-pop" /> : hasVariation ? <SlidersHorizontal className="h-[18px] w-[18px]" /> : <Plus className="h-5 w-5" />}
+          </button>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-4">

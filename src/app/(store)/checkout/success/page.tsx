@@ -8,7 +8,7 @@ import { money, useCart } from "@/lib/cart";
 
 interface Order {
   id: string; email: string; name: string; address: string;
-  items: { title: string; qty: number; price: number; image: string; variant?: string }[];
+  items: { id: string; title: string; qty: number; price: number; image: string; variant?: string }[];
   totals: { subtotal: number; shipping: number; tax: number; total: number };
   date: string;
 }
@@ -44,11 +44,17 @@ function SuccessContent() {
           setStatus("success");
           sessionStorage.removeItem("sara-last-order");
           clear();
-          // Send receipt email to Sara (fire and forget)
+          // Send receipt email (fire and forget)
           fetch("/api/send-receipt", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(parsed),
+          }).catch(() => {});
+          // Decrement stock for each purchased item (fire and forget)
+          fetch("/api/decrement-stock", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ items: parsed.items.map((it: { id: string; qty: number }) => ({ id: it.id, qty: it.qty })) }),
           }).catch(() => {});
         }
       } else if (paymentIntent) {
