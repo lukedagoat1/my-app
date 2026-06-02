@@ -7,12 +7,17 @@ import { Check, Plus, SlidersHorizontal } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { useCart, money } from "@/lib/cart";
 import { StarRating, ProductImage } from "./bits";
+import { useSalePrices } from "./SalePriceProvider";
 
 export default function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const add = useCart((s) => s.add);
   const router = useRouter();
   const [added, setAdded] = useState(false);
-  const discount = Math.round((1 - product.price / product.compareAt) * 100);
+  const salePrices = useSalePrices();
+  const saleOverride = salePrices[product.id];
+  const effectivePrice = saleOverride && saleOverride < product.price ? saleOverride : product.price;
+  const effectiveCompareAt = saleOverride && saleOverride < product.price ? product.price : product.compareAt;
+  const discount = Math.round((1 - effectivePrice / effectiveCompareAt) * 100);
   const hasVariation = !!product.variation;
 
   function handleAdd(e: React.MouseEvent) {
@@ -22,7 +27,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
       router.push(`/product/${product.id}`);
       return;
     }
-    add({ id: product.id, title: product.title, brand: product.brand, price: product.price, image: product.image });
+    add({ id: product.id, title: product.title, brand: product.brand, price: effectivePrice, image: product.image });
     setAdded(true);
     setTimeout(() => setAdded(false), 1400);
   }
@@ -43,6 +48,11 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
           {product.bestseller && (
             <span className="rounded-full bg-[var(--s-wine)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
               Bestseller
+            </span>
+          )}
+          {saleOverride && saleOverride < product.price && (
+            <span className="rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+              SALE
             </span>
           )}
           {discount > 0 && (
@@ -73,9 +83,11 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
         </h3>
         <div className="mt-3 flex items-end justify-between">
           <div className="flex items-baseline gap-2">
-            <span className="font-display text-lg font-bold text-[var(--s-ink)]">{money(product.price)}</span>
-            {product.compareAt > product.price && (
-              <span className="text-xs text-[var(--s-ink-soft)] line-through">{money(product.compareAt)}</span>
+            <span className={`font-display text-lg font-bold ${saleOverride && saleOverride < product.price ? "text-red-600" : "text-[var(--s-ink)]"}`}>
+              {money(effectivePrice)}
+            </span>
+            {effectiveCompareAt > effectivePrice && (
+              <span className="text-xs text-[var(--s-ink-soft)] line-through">{money(effectiveCompareAt)}</span>
             )}
           </div>
           <span className="text-[10.5px] font-medium text-[var(--s-ink-soft)]">{product.sold}+ sold</span>

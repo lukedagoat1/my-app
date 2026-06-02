@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { CheckCircle2, Package, Mail, Gift, ArrowRight, Truck, XCircle } from "lucide-react";
+import { CheckCircle2, Package, Mail, Gift, ArrowRight, Truck, XCircle, Search } from "lucide-react";
 import { money, useCart } from "@/lib/cart";
 
 interface Order {
@@ -38,17 +38,20 @@ function SuccessContent() {
         setOrder(parsed);
 
         if (redirectStatus === "failed") {
-          // Payment failed after redirect — don't clear cart
           setStatus("failed");
           sessionStorage.removeItem("sara-last-order");
         } else {
-          // success or no redirect param (direct navigation after confirmPayment)
           setStatus("success");
           sessionStorage.removeItem("sara-last-order");
-          clear(); // clear cart now payment is confirmed
+          clear();
+          // Send receipt email to Sara (fire and forget)
+          fetch("/api/send-receipt", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(parsed),
+          }).catch(() => {});
         }
       } else if (paymentIntent) {
-        // Stripe redirected back but sessionStorage was cleared (e.g. different tab)
         setStatus(redirectStatus === "succeeded" ? "success" : "failed");
       } else {
         setStatus("empty");
@@ -144,15 +147,21 @@ function SuccessContent() {
         </div>
       </div>
 
-      <div className="mt-8 text-center">
+      <div className="mt-8 flex flex-col items-center gap-3">
         <Link
           href="/shop"
           className="inline-flex items-center gap-2 rounded-full bg-[var(--s-wine)] px-7 py-3.5 text-sm font-semibold text-white hover:bg-[var(--s-wine-deep)]"
         >
           Continue shopping <ArrowRight className="h-4 w-4" />
         </Link>
-        <p className="mt-4 text-xs text-[var(--s-ink-soft)]">
-          Questions about your order? Email{" "}
+        <Link
+          href={`/track-order?id=${order.id}`}
+          className="inline-flex items-center gap-2 rounded-full border border-[var(--s-line)] bg-white px-7 py-3.5 text-sm font-semibold text-[var(--s-ink)] hover:border-[var(--s-wine)]"
+        >
+          <Search className="h-4 w-4" /> Track this order
+        </Link>
+        <p className="mt-2 text-xs text-[var(--s-ink-soft)]">
+          Questions? Email{" "}
           <a href="mailto:sarastradingpost@gmail.com" className="font-medium text-[var(--s-wine)] underline">
             sarastradingpost@gmail.com
           </a>

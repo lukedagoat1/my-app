@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Lock, CreditCard, Truck, Check, ChevronLeft, BadgeCheck, ShieldCheck, Loader2,
 } from "lucide-react";
@@ -10,6 +9,7 @@ import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-
 import { useCart, useCartTotals, useHydrated, money } from "@/lib/cart";
 import { getStripe } from "@/lib/stripe";
 import OrderSummary from "@/components/store/OrderSummary";
+import AddressAutocomplete from "@/components/store/AddressAutocomplete";
 
 type Step = 1 | 2 | 3;
 
@@ -17,7 +17,8 @@ const empty = {
   email: "", first: "", last: "", address: "", apt: "", city: "", state: "", zip: "",
 };
 
-// ── Stripe payment form (must live inside <Elements>) ──────────────────────
+// ── Stripe payment form — must live inside <Elements> ─────────────────────
+// Uses elements.submit() to validate card before advancing to review step
 function StripePaymentForm({
   onElementReady,
   onReview,
@@ -27,6 +28,25 @@ function StripePaymentForm({
   onReview: () => void;
   onBack: () => void;
 }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [validating, setValidating] = useState(false);
+  const [cardError, setCardError] = useState<string | null>(null);
+
+  // Validate card details BEFORE advancing to review — fixes "not waiting" issue
+  async function handleReview() {
+    if (!stripe || !elements) return;
+    setValidating(true);
+    setCardError(null);
+    const { error } = await elements.submit();
+    setValidating(false);
+    if (error) {
+      setCardError(error.message ?? "Please check your payment details.");
+      return;
+    }
+    onReview(); // only advances if card is valid and complete
+  }
+
   return (
     <div className="s-reveal">
       <h2 className="font-display text-xl font-bold text-[var(--s-ink)]">Payment</h2>
@@ -35,35 +55,34 @@ function StripePaymentForm({
       </p>
       <div className="mt-5">
         <PaymentElement
-          options={{
-            layout: "tabs",
-            wallets: { applePay: "auto", googlePay: "auto" },
-          }}
+          options={{ layout: "tabs", wallets: { applePay: "auto", googlePay: "auto" } }}
           onReady={onElementReady}
         />
       </div>
+      {cardError && (
+        <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-600">{cardError}</p>
+      )}
       <div className="mt-6 flex gap-3">
-        <button
-          onClick={onBack}
-          className="rounded-full border border-[var(--s-line)] px-6 py-3.5 text-sm font-semibold text-[var(--s-ink)]"
-        >
+        <button onClick={onBack} className="rounded-full border border-[var(--s-line)] px-6 py-3.5 text-sm font-semibold text-[var(--s-ink)]">
           Back
         </button>
         <button
           type="button"
-          className="flex-1 rounded-full bg-[var(--s-wine)] py-3.5 text-sm font-bold text-white hover:bg-[var(--s-wine-deep)]"
-          onClick={onReview}
+          onClick={handleReview}
+          disabled={validating || !stripe}
+          className="flex-1 rounded-full bg-[var(--s-wine)] py-3.5 text-sm font-bold text-white hover:bg-[var(--s-wine-deep)] disabled:opacity-70"
         >
-          Review order
+          {validating ? <><Loader2 className="inline h-4 w-4 animate-spin mr-2" />Validating…</> : "Review order"}
         </button>
       </div>
     </div>
   );
 }
 
-// ── Place-order button (must live inside <Elements> so it can call stripe.confirmPayment) ──
+// ── Place-order button — must live inside <Elements> ──────────────────────
 function PlaceOrderButton({
   order,
+  clientSecret,
   onError,
 }: {
   order: {
@@ -72,6 +91,7 @@ function PlaceOrderButton({
     totals: { subtotal: number; shipping: number; tax: number; total: number };
     date: string;
   };
+  clientSecret: string;
   onError: (msg: string) => void;
 }) {
   const stripe = useStripe();
@@ -82,24 +102,20 @@ function PlaceOrderButton({
     if (!stripe || !elements) return;
     setPlacing(true);
 
-    // Save order to sessionStorage BEFORE Stripe redirects away
     sessionStorage.setItem("sara-last-order", JSON.stringify(order));
 
     const { error } = await stripe.confirmPayment({
       elements,
+      clientSecret,
       confirmParams: {
         return_url: `${window.location.origin}/checkout/success`,
         receipt_email: order.email,
         payment_method_data: {
-          billing_details: {
-            name: order.name,
-            email: order.email,
-          },
+          billing_details: { name: order.name, email: order.email },
         },
       },
     });
 
-    // If we get here, confirmPayment failed (success always redirects)
     if (error) {
       sessionStorage.removeItem("sara-last-order");
       onError(error.message ?? "Payment failed. Please try again.");
@@ -123,9 +139,7 @@ function PlaceOrderButton({
 // ── Main checkout page ─────────────────────────────────────────────────────
 export default function CheckoutPage() {
   const hydrated = useHydrated();
-  const router = useRouter();
   const lines = useCart((s) => s.lines);
-  const clear = useCart((s) => s.clear);
   const totals = useCartTotals();
 
   const [step, setStep] = useState<Step>(1);
@@ -133,7 +147,6 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loadingIntent, setLoadingIntent] = useState(false);
-  const [stripeReady, setStripeReady] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
   function set<K extends keyof typeof empty>(k: K, v: string) {
@@ -154,15 +167,10 @@ export default function CheckoutPage() {
       const v = f[k].trim();
       if (!v) { e[k] = "Required"; continue; }
       if (k === "email" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { e[k] = "Enter a valid email"; continue; }
-      if (k === "first" || k === "last") {
-        if (v.length < 2) { e[k] = "Too short"; continue; }
-        if (!/^[A-Za-zÀ-ÖØ-öø-ÿ'\- ]+$/.test(v)) { e[k] = "Letters only"; continue; }
-      }
+      if ((k === "first" || k === "last") && v.length < 2) { e[k] = "Too short"; continue; }
+      if ((k === "first" || k === "last") && !/^[A-Za-zÀ-ÖØ-öø-ÿ'\- ]+$/.test(v)) { e[k] = "Letters only"; continue; }
       if (k === "address" && v.length < 5) { e[k] = "Enter a full street address"; continue; }
-      if (k === "city") {
-        if (v.length < 2) { e[k] = "Enter a city name"; continue; }
-        if (!/^[A-Za-zÀ-ÖØ-öø-ÿ'\- ]+$/.test(v)) { e[k] = "Invalid city name"; continue; }
-      }
+      if (k === "city" && v.length < 2) { e[k] = "Enter a city name"; continue; }
       if (k === "state" && !US_STATES.has(v.toUpperCase())) { e[k] = "Enter a 2-letter state (e.g. TX)"; continue; }
       if (k === "zip" && !/^\d{5}(-\d{4})?$/.test(v)) { e[k] = "Enter a valid ZIP code"; continue; }
     }
@@ -177,33 +185,24 @@ export default function CheckoutPage() {
       const res = await fetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: totals.total,
-          email: f.email,
-          name: `${f.first} ${f.last}`,
-        }),
+        body: JSON.stringify({ amount: totals.total, email: f.email, name: `${f.first} ${f.last}` }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setClientSecret(data.clientSecret);
       setStep(2);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Could not initialise payment. Please try again.";
-      setErrors({ _general: msg });
+      setErrors({ _general: err instanceof Error ? err.message : "Could not initialise payment. Please try again." });
     } finally {
       setLoadingIntent(false);
     }
   }
 
-  const handleStripeElementReady = useCallback(() => {
-    setStripeReady(true);
-  }, []);
+  const handleStripeElementReady = useCallback(() => {}, []);
+  const handleReviewOrder = useCallback(() => setStep(3), []);
 
-  const handleReviewOrder = useCallback(() => {
-    setStep(3);
-  }, []);
-
-  const orderId = "STP-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+  // Stable orderId that doesn't regenerate on every render
+  const [orderId] = useState(() => "STP-" + Math.random().toString(36).slice(2, 8).toUpperCase());
   const orderForStripe = {
     id: orderId,
     email: f.email,
@@ -217,29 +216,21 @@ export default function CheckoutPage() {
   const stripeAppearance = {
     theme: "stripe" as const,
     variables: {
-      colorPrimary: "#7c2d44",
-      colorBackground: "#ffffff",
-      colorText: "#1a1a2e",
-      colorDanger: "#ef4444",
-      fontFamily: "Inter, system-ui, sans-serif",
-      borderRadius: "12px",
-      spacingUnit: "4px",
+      colorPrimary: "#7c2d44", colorBackground: "#ffffff", colorText: "#1a1a2e",
+      colorDanger: "#ef4444", fontFamily: "Inter, system-ui, sans-serif",
+      borderRadius: "12px", spacingUnit: "4px",
     },
   };
 
-  if (!hydrated) return (
-    <div className="mx-auto max-w-7xl px-6 py-24 text-center text-[var(--s-ink-soft)]">Loading…</div>
-  );
+  if (!hydrated) return <div className="mx-auto max-w-7xl px-6 py-24 text-center text-[var(--s-ink-soft)]">Loading…</div>;
 
-  if (lines.length === 0) {
-    return (
-      <div className="mx-auto max-w-xl px-6 py-24 text-center">
-        <h1 className="font-display text-2xl font-bold text-[var(--s-ink)]">Your bag is empty</h1>
-        <p className="mt-2 text-[var(--s-ink-soft)]">Add a few favorites before checking out.</p>
-        <Link href="/shop" className="mt-5 inline-block rounded-full bg-[var(--s-wine)] px-6 py-3 text-sm font-semibold text-white">Browse the collection</Link>
-      </div>
-    );
-  }
+  if (lines.length === 0) return (
+    <div className="mx-auto max-w-xl px-6 py-24 text-center">
+      <h1 className="font-display text-2xl font-bold text-[var(--s-ink)]">Your bag is empty</h1>
+      <p className="mt-2 text-[var(--s-ink-soft)]">Add a few favorites before checking out.</p>
+      <Link href="/shop" className="mt-5 inline-block rounded-full bg-[var(--s-wine)] px-6 py-3 text-sm font-semibold text-white">Browse the collection</Link>
+    </div>
+  );
 
   const steps = [
     { n: 1, label: "Shipping", icon: Truck },
@@ -268,9 +259,7 @@ export default function CheckoutPage() {
               </span>
               <span className={`text-sm font-semibold ${step >= s.n ? "text-[var(--s-ink)]" : "text-[var(--s-ink-soft)]"}`}>{s.label}</span>
             </div>
-            {i < steps.length - 1 && (
-              <span className={`mx-3 h-px flex-1 ${step > s.n ? "bg-green-600" : "bg-[var(--s-line)]"}`} />
-            )}
+            {i < steps.length - 1 && <span className={`mx-3 h-px flex-1 ${step > s.n ? "bg-green-600" : "bg-[var(--s-line)]"}`} />}
           </li>
         ))}
       </ol>
@@ -283,12 +272,25 @@ export default function CheckoutPage() {
             <div className="s-reveal">
               <h2 className="font-display text-xl font-bold text-[var(--s-ink)]">Contact &amp; shipping</h2>
               <div className="mt-5 grid gap-4">
-                <Field label="Email" v={f.email} on={(v) => set("email", v)} err={errors.email} type="email" placeholder="you@email.com" hint="For your order confirmation &amp; tracking" full autoComplete="email" />
+                <Field label="Email" v={f.email} on={(v) => set("email", v)} err={errors.email} type="email"
+                  placeholder="you@email.com" hint="For your order confirmation &amp; tracking" full autoComplete="email" />
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="First name" v={f.first} on={(v) => set("first", v)} err={errors.first} autoComplete="given-name" />
                   <Field label="Last name" v={f.last} on={(v) => set("last", v)} err={errors.last} autoComplete="family-name" />
                 </div>
-                <Field label="Address" v={f.address} on={(v) => set("address", v)} err={errors.address} full placeholder="123 Rosewood Ave" autoComplete="address-line1" />
+
+                {/* Address with autocomplete */}
+                <AddressAutocomplete
+                  value={f.address}
+                  onChange={(v) => set("address", v)}
+                  onSelect={({ address, city, state, zip }) => {
+                    setF((prev) => ({ ...prev, address, city, state, zip }));
+                    setErrors((e) => ({ ...e, address: "", city: "", state: "", zip: "" }));
+                  }}
+                  error={errors.address}
+                  placeholder="Start typing your street address…"
+                />
+
                 <Field label="Apartment, suite (optional)" v={f.apt} on={(v) => set("apt", v)} full autoComplete="address-line2" />
                 <div className="grid gap-4 sm:grid-cols-3">
                   <Field label="City" v={f.city} on={(v) => set("city", v)} err={errors.city} autoComplete="address-level2" />
@@ -307,14 +309,11 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          {/* ── Step 2 & 3: Stripe Elements (always mounted once clientSecret exists) ── */}
+          {/* ── Steps 2 & 3: Stripe Elements (mounted once clientSecret exists) ── */}
           {clientSecret && (
-            <Elements
-              stripe={getStripe()}
-              options={{ clientSecret, appearance: stripeAppearance }}
-            >
-              {/* Payment form — hidden on step 3 but kept mounted so PaymentElement stays registered */}
-              <div className={step !== 2 ? "hidden" : ""}>
+            <Elements stripe={getStripe()} options={{ clientSecret, appearance: stripeAppearance }}>
+              {/* Payment form — invisible on step 3 but kept mounted so elements remain registered */}
+              <div style={step !== 2 ? { position: "absolute", visibility: "hidden", pointerEvents: "none", height: 0, overflow: "hidden" } : {}}>
                 <StripePaymentForm
                   onElementReady={handleStripeElementReady}
                   onReview={handleReviewOrder}
@@ -322,12 +321,14 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              {/* Review + place order — shown on step 3 */}
+              {/* Review + pay — step 3 */}
               {step === 3 && (
                 <div className="s-reveal">
                   <h2 className="font-display text-xl font-bold text-[var(--s-ink)]">Review &amp; pay</h2>
                   <div className="mt-5 space-y-4">
-                    <ReviewRow icon={Truck} title="Ship to" value={`${f.first} ${f.last}, ${f.address}${f.apt ? " " + f.apt : ""}, ${f.city}, ${f.state} ${f.zip}`} onEdit={() => setStep(1)} />
+                    <ReviewRow icon={Truck} title="Ship to"
+                      value={`${f.first} ${f.last}, ${f.address}${f.apt ? " " + f.apt : ""}, ${f.city}, ${f.state} ${f.zip}`}
+                      onEdit={() => setStep(1)} />
                     <ReviewRow icon={CreditCard} title="Payment" value="Secured via Stripe" onEdit={() => setStep(2)} />
                   </div>
                   <ul className="mt-5 divide-y divide-[var(--s-line)] rounded-xl border border-[var(--s-line)]">
@@ -341,13 +342,12 @@ export default function CheckoutPage() {
                     ))}
                   </ul>
                   {paymentError && (
-                    <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-                      {paymentError}
-                    </div>
+                    <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{paymentError}</div>
                   )}
-                  <PlaceOrderButton order={orderForStripe} onError={setPaymentError} />
+                  <PlaceOrderButton order={orderForStripe} clientSecret={clientSecret} onError={setPaymentError} />
                   <p className="mt-3 text-center text-xs text-[var(--s-ink-soft)]">
-                    By placing your order you agree to our <Link href="/policies" className="font-medium text-[var(--s-wine)] underline">return policy</Link> &amp; authenticity guarantee.
+                    By placing your order you agree to our{" "}
+                    <Link href="/policies" className="font-medium text-[var(--s-wine)] underline">return policy</Link> &amp; authenticity guarantee.
                   </p>
                 </div>
               )}
@@ -384,8 +384,8 @@ function Field({ label, v, on, err, type = "text", placeholder, hint, full, auto
       <label className="text-xs font-semibold text-[var(--s-ink)]">{label}</label>
       <div className="mt-1.5">
         <input
-          type={type} value={v} onChange={(e) => on(e.target.value)} placeholder={placeholder}
-          autoComplete={autoComplete}
+          type={type} value={v} onChange={(e) => on(e.target.value)}
+          placeholder={placeholder} autoComplete={autoComplete}
           className={`w-full rounded-xl border bg-white px-3.5 py-3 text-sm text-[var(--s-ink)] outline-none transition-colors placeholder:text-[var(--s-ink-soft)]/60 focus:border-[var(--s-wine)] ${err ? "border-red-400" : "border-[var(--s-line)]"}`}
         />
       </div>

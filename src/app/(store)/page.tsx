@@ -63,11 +63,11 @@ export default function HomePage() {
           <div className="s-reveal relative mx-auto w-full max-w-md lg:max-w-none" style={{ animationDelay: "120ms" }}>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
-                {heroPicks[0] && <HeroTile img={heroPicks[0].image} title={heroPicks[0].title} brand={heroPicks[0].brand} tall />}
-                {heroPicks[1] && <HeroTile img={heroPicks[1].image} title={heroPicks[1].title} brand={heroPicks[1].brand} />}
+                {heroPicks[0] && <HeroTile id={heroPicks[0].id} img={heroPicks[0].image} title={heroPicks[0].title} brand={heroPicks[0].brand} tall />}
+                {heroPicks[1] && <HeroTile id={heroPicks[1].id} img={heroPicks[1].image} title={heroPicks[1].title} brand={heroPicks[1].brand} />}
               </div>
               <div className="space-y-4 pt-10">
-                {heroPicks[2] && <HeroTile img={heroPicks[2].image} title={heroPicks[2].title} brand={heroPicks[2].brand} />}
+                {heroPicks[2] && <HeroTile id={heroPicks[2].id} img={heroPicks[2].image} title={heroPicks[2].title} brand={heroPicks[2].brand} />}
                 <div className="rounded-2xl bg-[var(--s-wine)] p-5 text-white s-shadow-lg">
                   <div className="flex items-center gap-1 text-[var(--s-gold-soft)]">
                     {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}
@@ -245,9 +245,9 @@ export default function HomePage() {
   );
 }
 
-function HeroTile({ img, title, brand, tall }: { img: string; title: string; brand: string; tall?: boolean }) {
+function HeroTile({ id, img, title, brand, tall }: { id: string; img: string; title: string; brand: string; tall?: boolean }) {
   return (
-    <div className={`s-shine-wrap group overflow-hidden rounded-2xl border border-[var(--s-line)] bg-white s-shadow ${tall ? "row-span-2" : ""}`}>
+    <Link href={`/product/${id}`} className={`s-shine-wrap group overflow-hidden rounded-2xl border border-[var(--s-line)] bg-white s-shadow ${tall ? "row-span-2" : ""}`}>
       <div className={`overflow-hidden bg-[var(--s-cream-2)] ${tall ? "aspect-[3/4]" : "aspect-square"}`}>
         <ProductImage src={img} alt={title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
       </div>
@@ -255,7 +255,7 @@ function HeroTile({ img, title, brand, tall }: { img: string; title: string; bra
         <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--s-wine)]">{brand}</p>
         <p className="line-clamp-1 text-xs text-[var(--s-ink-soft)]">{title}</p>
       </div>
-    </div>
+    </Link>
   );
 }
 

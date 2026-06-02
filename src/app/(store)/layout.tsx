@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import Navbar from "@/components/store/Navbar";
 import Footer from "@/components/store/Footer";
+import SalePriceProvider from "@/components/store/SalePriceProvider";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -41,7 +42,7 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
   return (
     <div className={`store-root ${playfair.variable} ${inter.variable} flex min-h-screen flex-col`}>
       <Navbar />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1"><SalePriceProvider>{children}</SalePriceProvider></main>
       <Footer />
     </div>
   );
