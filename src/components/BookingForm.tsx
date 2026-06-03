@@ -115,7 +115,7 @@ export function BookingForm() {
       </div>
 
       <div className="mt-4">
-        <Field label="Email" name="Email" type="email" placeholder="you@email.com" required />
+        <Field label="Email" name="email" type="email" placeholder="you@email.com" required />
       </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
