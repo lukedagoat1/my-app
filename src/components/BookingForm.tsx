@@ -46,7 +46,6 @@ export function BookingForm() {
         headers: { Accept: 'application/json' },
         body: data,
       })
-      if (!res.ok) throw new Error('Network error')
       const json = await res.json()
       if (json.success === 'true' || json.success === true) {
         if (typeof window !== 'undefined') {
@@ -57,7 +56,7 @@ export function BookingForm() {
         form.reset()
       } else {
         console.error('Web3Forms error:', json)
-        throw new Error(json.message || 'Submission failed')
+        setStatus('error')
       }
     } catch (err) {
       console.error('Form submit error:', err)
@@ -102,7 +101,7 @@ export function BookingForm() {
       <input type="hidden" name="subject" value="New Crystal Detailing booking" />
       <input type="hidden" name="from_name" value="Crystal Detailing" />
       <input type="hidden" name="first_time_discount" value={isFirstTime ? 'Yes — $50 off applied' : 'No — returning customer'} />
-      <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
+      <input type="hidden" name="botcheck" value="" />
 
       {isFirstTime && (
         <div className="mb-5 rounded-xl border border-crystal/30 bg-crystal/10 px-4 py-3 text-center text-sm font-semibold text-crystal">
