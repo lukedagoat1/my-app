@@ -27,6 +27,7 @@ type Status = 'idle' | 'submitting' | 'success' | 'error'
 export function BookingForm() {
   const [status, setStatus] = useState<Status>('idle')
   const [isFirstTime, setIsFirstTime] = useState(true)
+  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -63,6 +64,7 @@ export function BookingForm() {
         form.reset()
       } else {
         console.error('Web3Forms error:', json)
+        setErrorMsg(json.message || JSON.stringify(json))
         setStatus('error')
       }
     } catch (err) {
@@ -151,8 +153,7 @@ export function BookingForm() {
 
       {status === 'error' && (
         <p className="mt-4 rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-300">
-          Something went wrong. Please call or text us at{' '}
-          <a href="tel:+14696538552" className="font-semibold underline">(469) 653-8552</a>.
+          {errorMsg || 'Something went wrong'}
         </p>
       )}
 
