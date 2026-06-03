@@ -17,8 +17,8 @@ const fadeUp = {
 const packages = [
   {
     name: 'Exterior Detail',
-    now: '75',
-    was: '125',
+    now: '95',
+    was: '145',
     tag: 'Showroom shine',
     desc: 'Hand wash, wheels & tires, bug & tar removal, streak-free glass, and a protective wax finish.',
     features: ['Foam hand wash', 'Wheels & tire shine', 'Streak-free windows', 'Spray wax protection'],
@@ -26,8 +26,8 @@ const packages = [
   },
   {
     name: 'Interior Detail',
-    now: '90',
-    was: '140',
+    now: '110',
+    was: '160',
     tag: 'Like-new cabin',
     desc: 'Full vacuum, steam clean, shampooed seats & carpets, and dressed dash, vents and panels.',
     features: ['Deep vacuum & steam', 'Seat & carpet shampoo', 'Dash & panel treatment', 'Streak-free interior glass'],
@@ -35,9 +35,9 @@ const packages = [
   },
   {
     name: 'Interior + Exterior',
-    now: '149',
+    now: '169',
     cents: '.99',
-    was: '199.99',
+    was: '219.99',
     tag: 'Most popular',
     desc: 'The full reset — our complete interior deep clean paired with a premium exterior wash & wax.',
     features: ['Everything interior', 'Everything exterior', 'Inside & out, done right', 'Best value bundle'],
@@ -45,8 +45,8 @@ const packages = [
   },
   {
     name: 'Premium Detail',
-    now: '250',
-    was: '300',
+    now: '270',
+    was: '320',
     tag: 'The works',
     desc: 'Clay bar treatment, ceramic spray protection, deep interior restoration and stain & odor removal.',
     features: ['Clay bar treatment', 'Ceramic spray coating', 'Deep interior restore', 'Stain & odor removal'],
@@ -84,12 +84,19 @@ const testimonials = [
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false)
+  const [isFirstVisit, setIsFirstVisit] = useState(true)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && localStorage.getItem('cd_booked') === 'true') {
+      setIsFirstVisit(false)
+    }
   }, [])
 
   return (
@@ -170,11 +177,13 @@ export default function Home() {
               to your driveway in Allen and surrounding areas.
             </motion.p>
 
-            <motion.div variants={fadeUp} className="mt-7 inline-flex flex-wrap items-center gap-3 rounded-2xl border border-crystal/30 bg-ink-soft/60 p-4 backdrop-blur">
-              <span className="font-heading text-3xl font-extrabold text-crystal">$50 OFF</span>
-              <span className="text-steel">your first detail —</span>
-              <span className="font-semibold text-white">starting at just $75</span>
-            </motion.div>
+            {isFirstVisit && (
+              <motion.div variants={fadeUp} className="mt-7 inline-flex flex-wrap items-center gap-3 rounded-2xl border border-crystal/30 bg-ink-soft/60 p-4 backdrop-blur">
+                <span className="font-heading text-3xl font-extrabold text-crystal">$50 OFF</span>
+                <span className="text-steel">your first detail —</span>
+                <span className="font-semibold text-white">starting at just $95</span>
+              </motion.div>
+            )}
 
             <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-4">
               <a
@@ -225,8 +234,8 @@ export default function Home() {
       <Section id="services">
         <SectionHead
           kicker="Services & Pricing"
-          title="Pick your package. Save $50 on every one."
-          sub="First-time customer pricing shown below — the $50 discount is already baked in. Final price varies slightly by vehicle size and condition."
+          title={isFirstVisit ? 'Pick your package. Save $50 on every one.' : 'Pick your package.'}
+          sub={isFirstVisit ? 'First-time customer pricing shown below — the $50 discount is already baked in. Final price varies slightly by vehicle size and condition.' : 'Final price varies slightly by vehicle size and condition.'}
         />
         <div className="grid gap-6 lg:grid-cols-4 sm:grid-cols-2">
           {packages.map((p, i) => (
@@ -252,13 +261,15 @@ export default function Home() {
               <h3 className="mt-1 font-heading text-xl font-bold">{p.name}</h3>
               <div className="mt-4 flex items-end gap-2">
                 <span className="font-heading text-4xl font-extrabold text-white">
-                  ${p.now}<span className="text-2xl">{p.cents}</span>
+                  ${isFirstVisit ? p.now : p.was.replace('.99', '')}<span className="text-2xl">{isFirstVisit ? p.cents : (p.was.endsWith('.99') ? '.99' : '')}</span>
                 </span>
-                <span className="mb-1 text-sm text-steel line-through">${p.was}</span>
+                {isFirstVisit && <span className="mb-1 text-sm text-steel line-through">${p.was}</span>}
               </div>
-              <span className="mt-1 inline-block w-fit rounded-md bg-crystal/15 px-2 py-0.5 text-xs font-semibold text-crystal-light">
-                $50 off applied
-              </span>
+              {isFirstVisit && (
+                <span className="mt-1 inline-block w-fit rounded-md bg-crystal/15 px-2 py-0.5 text-xs font-semibold text-crystal-light">
+                  $50 off applied
+                </span>
+              )}
               <p className="mt-4 text-sm text-steel">{p.desc}</p>
               <ul className="mt-4 space-y-2 text-sm">
                 {p.features.map((f) => (
@@ -471,7 +482,7 @@ export default function Home() {
                   <div className="font-heading text-xl font-bold text-white">{PHONE_DISPLAY}</div>
                 </div>
               </a>
-              <a href="mailto:dimitrikrystallis@gmail.com" className="flex items-center gap-4 rounded-2xl border border-white/10 bg-ink-soft/60 p-5 transition hover:border-crystal/40">
+              <a href="mailto:crystalautodetailsss@gmail.com" className="flex items-center gap-4 rounded-2xl border border-white/10 bg-ink-soft/60 p-5 transition hover:border-crystal/40">
                 <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-crystal/15 text-crystal">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
@@ -479,7 +490,7 @@ export default function Home() {
                 </span>
                 <div>
                   <div className="text-xs uppercase tracking-wider text-steel">Email</div>
-                  <div className="font-heading text-base font-bold text-white break-all">dimitrikrystallis@gmail.com</div>
+                  <div className="font-heading text-base font-bold text-white break-all">crystalautodetailsss@gmail.com</div>
                 </div>
               </a>
               <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-ink-soft/60 p-5">
@@ -512,7 +523,7 @@ export default function Home() {
           </div>
           <div className="flex flex-col gap-1 text-sm text-steel sm:text-right">
             <a href={PHONE_HREF} className="font-semibold text-white hover:text-crystal">{PHONE_DISPLAY}</a>
-            <a href="mailto:dimitrikrystallis@gmail.com" className="hover:text-crystal">dimitrikrystallis@gmail.com</a>
+            <a href="mailto:crystalautodetailsss@gmail.com" className="hover:text-crystal">crystalautodetailsss@gmail.com</a>
           </div>
         </div>
         <div className="border-t border-white/5 py-4 text-center text-xs text-steel">

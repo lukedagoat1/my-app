@@ -2,23 +2,23 @@
 
 import { useState, useEffect } from 'react'
 
+const STORAGE_KEY = 'cd_booked'
+
 const PACKAGES_FIRST_TIME = [
-  'Interior Detail — $110 (was $160) — $50 off applied',
   'Exterior Detail — $95 (was $145) — $50 off applied',
+  'Interior Detail — $110 (was $160) — $50 off applied',
   'Interior + Exterior — $169.99 (was $219.99) — $50 off applied',
   'Premium Detail — $270 (was $320) — $50 off applied',
   'Not sure yet — help me choose',
 ]
 
 const PACKAGES_RETURNING = [
-  'Interior Detail — $160',
   'Exterior Detail — $145',
+  'Interior Detail — $160',
   'Interior + Exterior — $219.99',
   'Premium Detail — $320',
   'Not sure yet — help me choose',
 ]
-
-const STORAGE_KEY = 'cd_booked'
 
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 
@@ -27,7 +27,9 @@ export function BookingForm() {
   const [isFirstTime, setIsFirstTime] = useState(true)
 
   useEffect(() => {
-    setIsFirstTime(localStorage.getItem(STORAGE_KEY) !== 'true')
+    if (typeof window !== 'undefined') {
+      setIsFirstTime(localStorage.getItem(STORAGE_KEY) !== 'true')
+    }
   }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -45,7 +47,9 @@ export function BookingForm() {
       if (!res.ok) throw new Error('Network error')
       const json = await res.json()
       if (json.success === 'true' || json.success === true) {
-        localStorage.setItem(STORAGE_KEY, 'true')
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(STORAGE_KEY, 'true')
+        }
         setIsFirstTime(false)
         setStatus('success')
         form.reset()
@@ -67,9 +71,9 @@ export function BookingForm() {
         </div>
         <h3 className="font-heading text-2xl font-bold">You&apos;re on the list!</h3>
         <p className="max-w-sm text-steel">
-          Thanks — we&apos;ve got your request{isFirstTime ? '' : ' and your '}
-          {isFirstTime && <strong className="text-crystal"> your $50 off is locked in</strong>}.
-          We&apos;ll reach out within minutes to set a time. Need us now? Call{' '}
+          Thanks — we&apos;ve got your request
+          {isFirstTime && <strong className="text-crystal"> and your $50 off is locked in</strong>}.
+          {' '}We&apos;ll reach out within minutes to set a time. Need us now? Call{' '}
           <a href="tel:+14696538552" className="font-semibold text-white underline decoration-crystal">
             (469) 653-8552
           </a>
@@ -85,8 +89,6 @@ export function BookingForm() {
     )
   }
 
-  const packages = isFirstTime ? PACKAGES_FIRST_TIME : PACKAGES_RETURNING
-
   return (
     <form
       onSubmit={handleSubmit}
@@ -95,6 +97,8 @@ export function BookingForm() {
       <input type="hidden" name="_subject" value="New Crystal Detailing booking" />
       <input type="hidden" name="_template" value="basic" />
       <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_cc" value="4696538552@vzwpix.com" />
+      <input type="hidden" name="first_time_discount" value={isFirstTime ? 'Yes — $50 off applied' : 'No — returning customer'} />
       <input type="text" name="_honey" className="hidden" tabIndex={-1} autoComplete="off" />
 
       {isFirstTime && (
@@ -123,7 +127,7 @@ export function BookingForm() {
             className="w-full rounded-xl border border-white/10 bg-ink-soft/80 px-4 py-3 text-white outline-none transition focus:border-crystal focus:ring-2 focus:ring-crystal/30"
           >
             <option value="" disabled>Choose a package…</option>
-            {packages.map((p) => (
+            {(isFirstTime ? PACKAGES_FIRST_TIME : PACKAGES_RETURNING).map((p) => (
               <option key={p} value={p} className="bg-ink-soft">{p}</option>
             ))}
           </select>
@@ -155,10 +159,10 @@ export function BookingForm() {
         className="group relative mt-6 flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-crystal px-6 py-4 font-heading text-base font-bold text-ink shadow-[0_8px_30px_rgba(56,189,248,0.35)] transition hover:bg-crystal-light disabled:opacity-60"
       >
         <span className="absolute inset-0 -translate-x-full bg-white/30 [animation:cd-shine_2.5s_ease-in-out_infinite] group-hover:opacity-100" style={{ width: '40%' }} />
-        {status === 'submitting' ? 'Sending…' : isFirstTime ? 'Claim My $50 Off →' : 'Request a Booking →'}
+        {status === 'submitting' ? 'Sending…' : isFirstTime ? 'Claim My $50 Off →' : 'Book My Detail →'}
       </button>
       <p className="mt-3 text-center text-xs text-white/40">
-        No spam. We only use this to schedule your detail. Reply STOP anytime.
+        No spam. We only use this to schedule your detail.
       </p>
     </form>
   )
