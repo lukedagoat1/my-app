@@ -63,12 +63,12 @@ export function BookingForm() {
         setStatus('success')
         form.reset()
       } else {
-        console.error('Web3Forms error:', json)
-        setErrorMsg(json.message || JSON.stringify(json))
+        const msg = JSON.stringify(json)
+        setErrorMsg(msg)
         setStatus('error')
       }
     } catch (err) {
-      console.error('Form submit error:', err)
+      setErrorMsg('NETWORK: ' + String(err))
       setStatus('error')
     }
   }
