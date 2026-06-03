@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 
 const STORAGE_KEY = 'cd_booked'
+const ACCESS_KEY = '4b277b81-fcbe-493b-83ec-84f706ed1d69'
+const LEAD_ENDPOINT = 'https://api.web3forms.com/submit'
 
 const PACKAGES_FIRST_TIME = [
   'Exterior Detail — $95 (was $145) — $50 off applied',
@@ -39,7 +41,7 @@ export function BookingForm() {
     setStatus('submitting')
 
     try {
-      const res = await fetch('https://formsubmit.co/ajax/crystalautodetailsss@gmail.com', {
+      const res = await fetch(LEAD_ENDPOINT, {
         method: 'POST',
         headers: { Accept: 'application/json' },
         body: data,
@@ -94,12 +96,11 @@ export function BookingForm() {
       onSubmit={handleSubmit}
       className="cd-glass rounded-3xl border border-white/10 p-6 sm:p-8 shadow-2xl"
     >
-      <input type="hidden" name="_subject" value="New Crystal Detailing booking" />
-      <input type="hidden" name="_template" value="basic" />
-      <input type="hidden" name="_captcha" value="false" />
-      <input type="hidden" name="_cc" value="4696538552@vzwpix.com" />
+      <input type="hidden" name="access_key" value={ACCESS_KEY} />
+      <input type="hidden" name="subject" value="New Crystal Detailing booking" />
+      <input type="hidden" name="from_name" value="Crystal Detailing" />
       <input type="hidden" name="first_time_discount" value={isFirstTime ? 'Yes — $50 off applied' : 'No — returning customer'} />
-      <input type="text" name="_honey" className="hidden" tabIndex={-1} autoComplete="off" />
+      <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
 
       {isFirstTime && (
         <div className="mb-5 rounded-xl border border-crystal/30 bg-crystal/10 px-4 py-3 text-center text-sm font-semibold text-crystal">
