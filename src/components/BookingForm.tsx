@@ -56,9 +56,11 @@ export function BookingForm() {
         setStatus('success')
         form.reset()
       } else {
-        throw new Error('Submission failed')
+        console.error('Web3Forms error:', json)
+        throw new Error(json.message || 'Submission failed')
       }
-    } catch {
+    } catch (err) {
+      console.error('Form submit error:', err)
       setStatus('error')
     }
   }
