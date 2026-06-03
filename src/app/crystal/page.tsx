@@ -38,6 +38,7 @@ const packages = [
     now: '169',
     cents: '.99',
     was: '219.99',
+    startingAt: true,
     tag: 'Most popular',
     desc: 'The full reset — our complete interior deep clean paired with a premium exterior wash & wax.',
     features: ['Everything interior', 'Everything exterior', 'Inside & out, done right', 'Best value bundle'],
@@ -259,11 +260,16 @@ export default function Home() {
               )}
               <span className="text-xs font-semibold uppercase tracking-wider text-crystal">{p.tag}</span>
               <h3 className="mt-1 font-heading text-xl font-bold">{p.name}</h3>
-              <div className="mt-4 flex items-end gap-2">
-                <span className="font-heading text-4xl font-extrabold text-white">
-                  ${isFirstVisit ? p.now : p.was.replace('.99', '')}<span className="text-2xl">{isFirstVisit ? p.cents : (p.was.endsWith('.99') ? '.99' : '')}</span>
-                </span>
-                {isFirstVisit && <span className="mb-1 text-sm text-steel line-through">${p.was}</span>}
+              <div className="mt-4">
+                {(p as {startingAt?: boolean}).startingAt && (
+                  <div className="text-xs font-medium text-steel mb-0.5">starting at</div>
+                )}
+                <div className="flex items-end gap-2">
+                  <span className="font-heading text-4xl font-extrabold text-white">
+                    ${isFirstVisit ? p.now : p.was.replace('.99', '')}<span className="text-2xl">{isFirstVisit ? p.cents : (p.was.endsWith('.99') ? '.99' : '')}</span>
+                  </span>
+                  {isFirstVisit && <span className="mb-1 text-sm text-steel line-through">${p.was}</span>}
+                </div>
               </div>
               {isFirstVisit && (
                 <span className="mt-1 inline-block w-fit rounded-md bg-crystal/15 px-2 py-0.5 text-xs font-semibold text-crystal-light">
@@ -293,6 +299,58 @@ export default function Home() {
               </a>
             </motion.div>
           ))}
+        </div>
+      </Section>
+
+      {/* BOOK */}
+      <Section id="book" tint>
+        <div className="grid gap-10 lg:grid-cols-2">
+          <div>
+            <SectionHead
+              align="left"
+              kicker="Book your detail"
+              title="Lock in your $50 off."
+              sub="Drop your details and we'll text or call within minutes to set a time. Or skip the form and call us directly."
+            />
+            <div className="space-y-4">
+              <a href={PHONE_HREF} className="flex items-center gap-4 rounded-2xl border border-white/10 bg-ink-soft/60 p-5 transition hover:border-crystal/40">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-crystal/15 text-crystal [animation:cd-pulse-ring_2s_ease-out_infinite]">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                </span>
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-steel">Call or text</div>
+                  <div className="font-heading text-xl font-bold text-white">{PHONE_DISPLAY}</div>
+                </div>
+              </a>
+              <a href="mailto:crystalautodetailsss@gmail.com" className="flex items-center gap-4 rounded-2xl border border-white/10 bg-ink-soft/60 p-5 transition hover:border-crystal/40">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-crystal/15 text-crystal">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                  </svg>
+                </span>
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-steel">Email</div>
+                  <div className="font-heading text-base font-bold text-white break-all">crystalautodetailsss@gmail.com</div>
+                </div>
+              </a>
+              <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-ink-soft/60 p-5">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-crystal/15 text-crystal">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" />
+                  </svg>
+                </span>
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-steel">Service area</div>
+                  <div className="font-heading text-base font-bold text-white">Allen, TX & surrounding areas</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="form">
+            <BookingForm />
+          </div>
         </div>
       </Section>
 
@@ -457,58 +515,6 @@ export default function Home() {
               </footer>
             </motion.blockquote>
           ))}
-        </div>
-      </Section>
-
-      {/* BOOK */}
-      <Section id="book" tint>
-        <div className="grid gap-10 lg:grid-cols-2">
-          <div>
-            <SectionHead
-              align="left"
-              kicker="Book your detail"
-              title="Lock in your $50 off."
-              sub="Drop your details and we'll text or call within minutes to set a time. Or skip the form and call us directly."
-            />
-            <div className="space-y-4">
-              <a href={PHONE_HREF} className="flex items-center gap-4 rounded-2xl border border-white/10 bg-ink-soft/60 p-5 transition hover:border-crystal/40">
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-crystal/15 text-crystal [animation:cd-pulse-ring_2s_ease-out_infinite]">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
-                  </svg>
-                </span>
-                <div>
-                  <div className="text-xs uppercase tracking-wider text-steel">Call or text</div>
-                  <div className="font-heading text-xl font-bold text-white">{PHONE_DISPLAY}</div>
-                </div>
-              </a>
-              <a href="mailto:crystalautodetailsss@gmail.com" className="flex items-center gap-4 rounded-2xl border border-white/10 bg-ink-soft/60 p-5 transition hover:border-crystal/40">
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-crystal/15 text-crystal">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                  </svg>
-                </span>
-                <div>
-                  <div className="text-xs uppercase tracking-wider text-steel">Email</div>
-                  <div className="font-heading text-base font-bold text-white break-all">crystalautodetailsss@gmail.com</div>
-                </div>
-              </a>
-              <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-ink-soft/60 p-5">
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-crystal/15 text-crystal">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" />
-                  </svg>
-                </span>
-                <div>
-                  <div className="text-xs uppercase tracking-wider text-steel">Service area</div>
-                  <div className="font-heading text-base font-bold text-white">Allen, TX & surrounding areas</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div id="form">
-            <BookingForm />
-          </div>
         </div>
       </Section>
 
