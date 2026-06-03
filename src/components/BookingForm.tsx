@@ -27,7 +27,6 @@ type Status = 'idle' | 'submitting' | 'success' | 'error'
 export function BookingForm() {
   const [status, setStatus] = useState<Status>('idle')
   const [isFirstTime, setIsFirstTime] = useState(true)
-  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -39,26 +38,20 @@ export function BookingForm() {
     e.preventDefault()
     const form = e.currentTarget
     const fd = new FormData(form)
+
+    // Add hidden fields to FormData
+    fd.set('access_key', ACCESS_KEY)
+    fd.set('subject', 'New Crystal Detailing booking')
+    fd.set('from_name', 'Crystal Detailing')
+    fd.set('first_time_discount', isFirstTime ? 'Yes — $50 off applied' : 'No — returning customer')
+
     setStatus('submitting')
 
     try {
-      const payload = {
-        access_key: ACCESS_KEY,
-        subject: 'New Crystal Detailing booking',
-        from_name: 'Crystal Detailing',
-        email: fd.get('email') as string,
-        name: fd.get('Name') as string,
-        phone: fd.get('Phone') as string,
-        vehicle: fd.get('Vehicle') as string,
-        package: fd.get('Package') as string,
-        notes: fd.get('Notes') as string,
-        first_time_discount: isFirstTime ? 'Yes — $50 off applied' : 'No — returning customer',
-      }
-
+      // Use FormData (no Content-Type header) — avoids CORS preflight
       const res = await fetch(LEAD_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(payload),
+        body: fd,
       })
       const json = await res.json()
       if (json.success === 'true' || json.success === true) {
@@ -70,12 +63,10 @@ export function BookingForm() {
         form.reset()
       } else {
         console.error('Web3Forms error:', json)
-        setErrorMsg(json.message || 'Unknown error')
         setStatus('error')
       }
     } catch (err) {
       console.error('Form submit error:', err)
-      setErrorMsg(String(err))
       setStatus('error')
     }
   }
@@ -120,8 +111,8 @@ export function BookingForm() {
       )}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Your name" name="Name" type="text" placeholder="Jordan Smith" required />
-        <Field label="Phone number" name="Phone" type="tel" placeholder="(469) 555-0123" required />
+        <Field label="Your name" name="name" type="text" placeholder="Jordan Smith" required />
+        <Field label="Phone number" name="phone" type="tel" placeholder="(469) 555-0123" required />
       </div>
 
       <div className="mt-4">
@@ -129,11 +120,11 @@ export function BookingForm() {
       </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <Field label="Vehicle (year / make / model)" name="Vehicle" type="text" placeholder="2019 Mercedes E63" required />
+        <Field label="Vehicle (year / make / model)" name="vehicle" type="text" placeholder="2019 Mercedes E63" required />
         <div>
           <label className="mb-1.5 block text-sm font-medium text-steel">Package</label>
           <select
-            name="Package"
+            name="package"
             required
             defaultValue=""
             className="w-full rounded-xl border border-white/10 bg-ink-soft/80 px-4 py-3 text-white outline-none transition focus:border-crystal focus:ring-2 focus:ring-crystal/30"
@@ -151,7 +142,7 @@ export function BookingForm() {
           Anything else? <span className="text-white/40">(optional)</span>
         </label>
         <textarea
-          name="Notes"
+          name="message"
           rows={3}
           placeholder="Pet hair, coffee stains, preferred days/times, your address area…"
           className="w-full resize-none rounded-xl border border-white/10 bg-ink-soft/80 px-4 py-3 text-white placeholder:text-white/30 outline-none transition focus:border-crystal focus:ring-2 focus:ring-crystal/30"
@@ -160,7 +151,7 @@ export function BookingForm() {
 
       {status === 'error' && (
         <p className="mt-4 rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-300">
-          Error: {errorMsg || 'Something went wrong'}. Call/text{' '}
+          Something went wrong. Please call or text us at{' '}
           <a href="tel:+14696538552" className="font-semibold underline">(469) 653-8552</a>.
         </p>
       )}
