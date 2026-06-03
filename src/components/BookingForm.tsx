@@ -27,6 +27,7 @@ type Status = 'idle' | 'submitting' | 'success' | 'error'
 export function BookingForm() {
   const [status, setStatus] = useState<Status>('idle')
   const [isFirstTime, setIsFirstTime] = useState(true)
+  const [errMsg, setErrMsg] = useState('')
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -45,7 +46,6 @@ export function BookingForm() {
         headers: { Accept: 'application/json' },
         body: data,
       })
-      if (!res.ok) throw new Error('Network error')
       const json = await res.json()
       if (json.success === 'true' || json.success === true) {
         if (typeof window !== 'undefined') {
@@ -54,8 +54,12 @@ export function BookingForm() {
         setIsFirstTime(false)
         setStatus('success')
         form.reset()
-      } else throw new Error('failed')
-    } catch {
+      } else {
+        setErrMsg(json.message || JSON.stringify(json))
+        setStatus('error')
+      }
+    } catch (err) {
+      setErrMsg('NETWORK: ' + String(err))
       setStatus('error')
     }
   }
@@ -146,9 +150,8 @@ export function BookingForm() {
       </div>
 
       {status === 'error' && (
-        <p className="mt-4 rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-300">
-          Something went wrong. Please call or text us at{' '}
-          <a href="tel:+14696538552" className="font-semibold underline">(469) 653-8552</a>.
+        <p className="mt-4 rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-300 break-all">
+          {errMsg || 'Unknown error'}
         </p>
       )}
 
