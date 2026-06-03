@@ -53,7 +53,6 @@ export function BookingForm() {
         package: fd.get('Package') as string,
         notes: fd.get('Notes') as string,
         first_time_discount: isFirstTime ? 'Yes — $50 off applied' : 'No — returning customer',
-        botcheck: false,
       }
 
       const res = await fetch(LEAD_ENDPOINT, {
