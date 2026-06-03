@@ -37,14 +37,28 @@ export function BookingForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = e.currentTarget
-    const data = new FormData(form)
+    const fd = new FormData(form)
     setStatus('submitting')
 
     try {
+      const payload = {
+        access_key: ACCESS_KEY,
+        subject: 'New Crystal Detailing booking',
+        from_name: 'Crystal Detailing',
+        email: fd.get('email') as string,
+        name: fd.get('Name') as string,
+        phone: fd.get('Phone') as string,
+        vehicle: fd.get('Vehicle') as string,
+        package: fd.get('Package') as string,
+        notes: fd.get('Notes') as string,
+        first_time_discount: isFirstTime ? 'Yes — $50 off applied' : 'No — returning customer',
+        botcheck: false,
+      }
+
       const res = await fetch(LEAD_ENDPOINT, {
         method: 'POST',
-        headers: { Accept: 'application/json' },
-        body: data,
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
       })
       const json = await res.json()
       if (json.success === 'true' || json.success === true) {
@@ -97,12 +111,6 @@ export function BookingForm() {
       onSubmit={handleSubmit}
       className="cd-glass rounded-3xl border border-white/10 p-6 sm:p-8 shadow-2xl"
     >
-      <input type="hidden" name="access_key" value={ACCESS_KEY} />
-      <input type="hidden" name="subject" value="New Crystal Detailing booking" />
-      <input type="hidden" name="from_name" value="Crystal Detailing" />
-      <input type="hidden" name="first_time_discount" value={isFirstTime ? 'Yes — $50 off applied' : 'No — returning customer'} />
-      <input type="hidden" name="botcheck" value="" />
-
       {isFirstTime && (
         <div className="mb-5 rounded-xl border border-crystal/30 bg-crystal/10 px-4 py-3 text-center text-sm font-semibold text-crystal">
           $50 off applied — first-time customer discount
