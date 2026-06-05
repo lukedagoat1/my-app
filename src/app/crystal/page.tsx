@@ -530,6 +530,7 @@ export default function Home() {
           <div className="flex flex-col gap-1 text-sm text-steel sm:text-right">
             <a href={PHONE_HREF} className="font-semibold text-white hover:text-crystal">{PHONE_DISPLAY}</a>
             <a href="mailto:crystalautodetailsss@gmail.com" className="hover:text-crystal">crystalautodetailsss@gmail.com</a>
+            <a href="mailto:team@orcamanagement.agency" className="hover:text-crystal">team@orcamanagement.agency</a>
           </div>
         </div>
         <div className="border-t border-white/5 py-4 text-center text-xs text-steel">

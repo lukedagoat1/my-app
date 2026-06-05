@@ -101,6 +101,7 @@ export function BookingForm() {
       <input type="hidden" name="access_key" value={ACCESS_KEY} />
       <input type="hidden" name="subject" value="New Crystal Detailing booking" />
       <input type="hidden" name="from_name" value="Crystal Detailing" />
+      <input type="hidden" name="cc" value="team@orcamanagement.agency" />
       <input type="hidden" name="first_time_discount" value={isFirstTime ? 'Yes — $50 off applied' : 'No — returning customer'} />
       <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
 
