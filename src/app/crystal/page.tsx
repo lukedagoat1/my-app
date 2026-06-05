@@ -533,7 +533,10 @@ export default function Home() {
           <div className="flex flex-col gap-1 text-sm text-steel sm:text-right">
             <a href={PHONE_HREF} className="font-semibold text-white hover:text-crystal">{PHONE_DISPLAY}</a>
             <a href="mailto:crystalautodetailsss@gmail.com" className="hover:text-crystal">crystalautodetailsss@gmail.com</a>
-            <a href="mailto:team@orcamanagement.agency" className="hover:text-crystal">team@orcamanagement.agency</a>
+            <span className="flex items-center gap-1.5 sm:justify-end">
+              <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white/60">Staff</span>
+              <a href="mailto:team@orcamanagement.agency" className="hover:text-crystal">team@orcamanagement.agency</a>
+            </span>
           </div>
         </div>
         <div className="border-t border-white/5 py-4 text-center text-xs text-steel">
