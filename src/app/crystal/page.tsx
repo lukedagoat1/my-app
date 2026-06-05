@@ -387,6 +387,7 @@ export default function Home() {
             <a href="#book" className="inline-block rounded-xl bg-crystal px-6 py-3 font-heading font-bold text-ink transition hover:bg-crystal-light">
               Get this result — $50 off
             </a>
+            <p className="mt-2 text-xs text-steel">First order only</p>
           </motion.div>
         </div>
 
@@ -410,6 +411,7 @@ export default function Home() {
             <a href="#book" className="inline-block rounded-xl bg-crystal px-6 py-3 font-heading font-bold text-ink transition hover:bg-crystal-light">
               Book a deep clean — $50 off
             </a>
+            <p className="mt-2 text-xs text-steel">First order only</p>
           </motion.div>
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }} variants={fadeUp} className="order-1 lg:order-2">
             <BeforeAfter
@@ -447,6 +449,7 @@ export default function Home() {
             <a href="#book" className="inline-block rounded-xl bg-crystal px-6 py-3 font-heading font-bold text-ink transition hover:bg-crystal-light">
               Refresh my seats — $50 off
             </a>
+            <p className="mt-2 text-xs text-steel">First order only</p>
           </motion.div>
         </div>
 
