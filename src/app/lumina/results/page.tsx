@@ -244,7 +244,7 @@ export default function ResultsPage() {
       <div className="min-h-screen bg-[#06060f] flex items-center justify-center">
         <div className="text-center">
           <p className="text-white/40 mb-6">No analysis data found.</p>
-          <button onClick={() => router.push('/')}
+          <button onClick={() => router.push('/lumina')}
             className="px-8 py-3 rounded-full text-sm border border-white/20 text-white/60 hover:text-white transition-colors">
             Start Over
           </button>
@@ -260,7 +260,7 @@ export default function ResultsPage() {
         style={{ background: `radial-gradient(circle, ${colors.from}, transparent)` }} />
 
       <div className="relative z-10 flex items-center justify-between px-6 py-5 border-b border-white/5">
-        <button onClick={() => router.push('/')} className="text-white/40 hover:text-white/80 transition-colors text-sm">
+        <button onClick={() => router.push('/lumina')} className="text-white/40 hover:text-white/80 transition-colors text-sm">
           ← Home
         </button>
         <span className="text-lg font-bold tracking-[0.15em]" style={{
@@ -269,7 +269,7 @@ export default function ResultsPage() {
         }}>
           LUMINA
         </span>
-        <button onClick={() => { reset(); router.push('/') }}
+        <button onClick={() => { reset(); router.push('/lumina') }}
           className="text-white/30 hover:text-white/70 transition-colors text-xs border border-white/10 px-3 py-1 rounded-full">
           Restart
         </button>
@@ -374,16 +374,16 @@ export default function ResultsPage() {
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
           className="flex flex-col sm:flex-row gap-4 justify-center pt-4 pb-10">
-          <button onClick={() => { reset(); router.push('/analysis') }}
+          <button onClick={() => { reset(); router.push('/lumina/analysis') }}
             className="px-10 py-4 rounded-full font-semibold text-[#06060f] text-sm"
             style={{ background: 'linear-gradient(135deg, #d4a847, #e8cc70, #e8c4d0)' }}>
             Analyse Again
           </button>
-          <button onClick={() => router.push('/history')}
+          <button onClick={() => router.push('/lumina/history')}
             className="px-10 py-4 rounded-full border border-white/15 text-white/50 hover:text-white hover:border-white/30 transition-all text-sm">
             Scan History
           </button>
-          <button onClick={() => router.push('/')}
+          <button onClick={() => router.push('/lumina')}
             className="px-10 py-4 rounded-full border border-white/15 text-white/50 hover:text-white hover:border-white/30 transition-all text-sm">
             ← Back to Home
           </button>

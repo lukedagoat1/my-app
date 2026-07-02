@@ -40,7 +40,7 @@ export default function PaywallPage() {
 
   const handleDemo = () => {
     setIsPremium(true)
-    router.push('/analysis')
+    router.push('/lumina/analysis')
   }
 
   return (
@@ -48,7 +48,7 @@ export default function PaywallPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
         <button
-          onClick={() => router.push('/')}
+          onClick={() => router.push('/lumina')}
           className="text-white/40 hover:text-white/80 transition-colors text-sm"
         >
           ← Back to Home
@@ -191,7 +191,7 @@ export default function PaywallPage() {
           {/* Back link */}
           <div className="text-center">
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.push('/lumina')}
               className="text-white/30 hover:text-white/60 transition-colors text-xs underline underline-offset-4"
             >
               ← Back to Home

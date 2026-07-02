@@ -34,7 +34,7 @@ export default function Home() {
 
   const start = () => {
     reset()
-    router.push('/analysis')
+    router.push('/lumina/analysis')
   }
 
   return (

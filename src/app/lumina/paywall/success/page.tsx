@@ -11,7 +11,7 @@ export default function PaywallSuccessPage() {
   useEffect(() => {
     setIsPremium(true)
     const timer = setTimeout(() => {
-      router.push('/analysis')
+      router.push('/lumina/analysis')
     }, 2000)
     return () => clearTimeout(timer)
   }, [setIsPremium, router])

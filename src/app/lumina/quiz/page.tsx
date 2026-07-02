@@ -114,7 +114,7 @@ export default function QuizPage() {
     const { type, concerns } = determineSkinType(answers, skinMetrics)
     setSkinType(type)
     setConcerns(concerns)
-    router.push('/results')
+    router.push('/lumina/results')
   }
 
   const q = QUESTIONS[current]

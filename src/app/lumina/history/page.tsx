@@ -188,7 +188,7 @@ export default function HistoryPage() {
               Complete your first skin analysis to see your history and track your skin health over time.
             </p>
             <button
-              onClick={() => router.push('/analysis')}
+              onClick={() => router.push('/lumina/analysis')}
               className="px-8 py-3.5 rounded-full font-semibold text-[#06060f] text-sm"
               style={{ background: 'linear-gradient(135deg, #d4a847, #e8cc70, #e8c4d0)' }}
             >

@@ -37,7 +37,7 @@ export default function AnalysisPage() {
 
   useEffect(() => {
     if (freeScansUsed >= 1 && !isPremium) {
-      router.push('/paywall')
+      router.push('/lumina/paywall')
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -210,7 +210,7 @@ export default function AnalysisPage() {
       setTimeout(() => {
         const avg = averageMetrics(useAppStore.getState().metricsHistory)
         setSkinMetrics(avg)
-        router.push('/quiz')
+        router.push('/lumina/quiz')
       }, 1800)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -243,7 +243,7 @@ export default function AnalysisPage() {
           <div className="text-5xl mb-6 opacity-40">◎</div>
           <h2 className="text-xl font-semibold text-white/80 mb-3">Camera Access Needed</h2>
           <p className="text-white/40 text-sm mb-8">{error}</p>
-          <button onClick={() => router.push('/')}
+          <button onClick={() => router.push('/lumina')}
             className="px-8 py-3 rounded-full border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition-colors text-sm">
             ← Back to Home
           </button>
@@ -255,7 +255,7 @@ export default function AnalysisPage() {
   return (
     <div className="min-h-screen bg-[#06060f] flex flex-col">
       <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
-        <button onClick={() => router.push('/')} className="text-white/40 hover:text-white/80 transition-colors text-sm">
+        <button onClick={() => router.push('/lumina')} className="text-white/40 hover:text-white/80 transition-colors text-sm">
           ← Back
         </button>
         <span className="text-lg font-bold tracking-[0.15em]" style={{
