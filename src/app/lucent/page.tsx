@@ -64,6 +64,7 @@ const projects: Project[] = [
     name: "Sara's Trading Post",
     category: 'Full online store · e-commerce',
     result: 'Complete storefront with live inventory, cart, and checkout — built to sell, not just look nice.',
+    img: '/work/saras-trading-post.jpg',
     href: 'https://saras-trading-post.vercel.app',
     gradient: 'from-rose-500 to-orange-500',
   },
