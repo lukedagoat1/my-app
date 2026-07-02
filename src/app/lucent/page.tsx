@@ -49,6 +49,7 @@ const projects: Project[] = [
     category: 'Demo — Brand site',
     result: 'Bold, modern storefront built to showcase the brand and drive orders.',
     img: '/work/gblendz.jpg',
+    href: '/gblendz',
     gradient: 'from-amber-500 to-rose-600',
   },
   {
@@ -58,6 +59,13 @@ const projects: Project[] = [
     img: '/work/lumina.jpg',
     href: 'https://my-app-navy-sigma-97.vercel.app',
     gradient: 'from-violet-500 to-fuchsia-600',
+  },
+  {
+    name: "Sara's Trading Post",
+    category: 'Full online store · e-commerce',
+    result: 'Complete storefront with live inventory, cart, and checkout — built to sell, not just look nice.',
+    href: 'https://saras-trading-post.vercel.app',
+    gradient: 'from-rose-500 to-orange-500',
   },
   {
     name: 'Your brand here',
