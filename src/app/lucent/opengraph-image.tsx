@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 // Branded Open Graph image for the Lucent Studio route. Generated at build
-// time so every shared lucentstudio.co link shows a Lucent preview — not a
+// time so every shared lucent-studios.com link shows a Lucent preview — not a
 // stale/cached image from another site deployed to the same URL.
 export const alt = 'Lucent Studio — Websites That Win You Customers'
 export const size = { width: 1200, height: 630 }
@@ -45,7 +45,7 @@ export default function Image() {
           Fast, beautiful, conversion-focused web design for local businesses — built by Luke.
         </div>
         <div style={{ display: 'flex', marginTop: '46px', fontSize: '24px', color: '#38bdf8' }}>
-          lucentstudio.co
+          lucent-studios.com
         </div>
       </div>
     ),

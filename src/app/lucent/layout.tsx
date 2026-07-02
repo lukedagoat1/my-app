@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-const SITE = 'https://lucentstudio.co'
+const SITE = 'https://lucent-studios.com'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
