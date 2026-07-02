@@ -57,7 +57,7 @@ const projects: Project[] = [
     category: 'AI face-scanning web app',
     result: 'Interactive face-scanning experience with a sleek, futuristic interface and real-time results.',
     img: '/work/lumina.jpg',
-    href: 'https://my-app-navy-sigma-97.vercel.app',
+    href: 'https://my-app-navy-sigma-97.vercel.app/lumina',
     gradient: 'from-violet-500 to-fuchsia-600',
   },
   {
