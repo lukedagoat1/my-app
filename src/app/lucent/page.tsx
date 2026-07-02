@@ -93,7 +93,7 @@ const testimonials = [
 const pricing = [
   {
     name: 'Basic',
-    price: '$300',
+    price: '$600',
     cadence: 'then $30/mo',
     tag: 'Perfect to get online',
     features: ['Custom one-page site', 'Mobile-perfect & fast', 'Lead form → your phone', 'Hosting + domain managed', 'Basic on-page SEO', 'Live in one day'],
