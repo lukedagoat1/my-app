@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { faqs } from './faq-data'
 
-const SITE = 'https://lucent-studios.com'
+const SITE = 'https://www.lucent-studios.com'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),

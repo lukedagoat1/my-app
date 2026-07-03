@@ -1,6 +1,6 @@
 // Known custom domains per SITE (only add once a domain is actually attached in Vercel).
 const KNOWN_DOMAINS: Record<string, string> = {
-  lucent: 'https://lucent-studios.com',
+  lucent: 'https://www.lucent-studios.com',
   crystal: 'https://crystaldetailing.com',
 }
 
