@@ -31,8 +31,14 @@ function ghHeaders(): Record<string, string> {
 const cache = new Map<string, { t: number; v: unknown }>();
 const TTL = 30_000;
 
-async function ghGet(filePath: string): Promise<{ content: string; sha: string } | null> {
-  const res = await fetch(`${API}/${filePath}?ref=${BRANCH}`, { headers: ghHeaders(), cache: "no-store" });
+// fresh=true bypasses all caches (needed for write sha lookups; only legal in
+// dynamic contexts like API routes). Default: 30s ISR cache, safe inside
+// statically-generated pages (e.g. on-demand /product/[id] for new listings).
+async function ghGet(filePath: string, fresh = false): Promise<{ content: string; sha: string } | null> {
+  const res = await fetch(`${API}/${filePath}?ref=${BRANCH}`, {
+    headers: ghHeaders(),
+    ...(fresh ? { cache: "no-store" as const } : { next: { revalidate: 30 } }),
+  });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`GitHub read ${filePath}: ${res.status}`);
   const data = (await res.json()) as { content: string; sha: string };
@@ -40,7 +46,7 @@ async function ghGet(filePath: string): Promise<{ content: string; sha: string }
 }
 
 async function ghPut(filePath: string, content: string | Buffer, message: string): Promise<void> {
-  const existing = await ghGet(filePath).catch(() => null);
+  const existing = await ghGet(filePath, true).catch(() => null);
   const body = {
     message,
     branch: BRANCH,
@@ -65,7 +71,7 @@ export async function readJson<T>(name: string, fallback: T, opts?: { fresh?: bo
     if (hit && Date.now() - hit.t < TTL) return hit.v as T;
   }
   try {
-    const file = await ghGet(key);
+    const file = await ghGet(key, opts?.fresh);
     const v = file ? (JSON.parse(file.content) as T) : fallback;
     cache.set(key, { t: Date.now(), v });
     return v;
