@@ -126,8 +126,22 @@ const pricing = [
 
 const techStack = ['Next.js', 'React', 'Tailwind', 'Framer Motion', 'TypeScript', 'SEO', 'Vercel', 'Analytics']
 
+// Tilt/magnetic only make sense with a hovering cursor; on touch they fight
+// scrolling, and reduced-motion users shouldn't get them at all.
+function useFinePointer() {
+  const [fine, setFine] = useState(false)
+  useEffect(() => {
+    setFine(
+      window.matchMedia('(pointer: fine)').matches &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    )
+  }, [])
+  return fine
+}
+
 // ── 3D tilt card with cursor-tracked glare ──────────────────────────
 function Tilt({ children, className = '', max = 8 }: { children: React.ReactNode; className?: string; max?: number }) {
+  const fine = useFinePointer()
   const ref = useRef<HTMLDivElement>(null)
   const px = useMotionValue(0.5)
   const py = useMotionValue(0.5)
@@ -148,6 +162,8 @@ function Tilt({ children, className = '', max = 8 }: { children: React.ReactNode
     py.set(0.5)
   }
 
+  if (!fine) return <div className={`relative ${className}`}>{children}</div>
+
   return (
     <motion.div
       ref={ref}
@@ -164,6 +180,7 @@ function Tilt({ children, className = '', max = 8 }: { children: React.ReactNode
 
 // ── magnetic CTA button ──────────────────────────────────────────────
 function Magnetic({ children }: { children: React.ReactNode }) {
+  const fine = useFinePointer()
   const ref = useRef<HTMLDivElement>(null)
   const x = useSpring(useMotionValue(0), { stiffness: 160, damping: 14 })
   const y = useSpring(useMotionValue(0), { stiffness: 160, damping: 14 })
@@ -178,6 +195,8 @@ function Magnetic({ children }: { children: React.ReactNode }) {
     x.set(0)
     y.set(0)
   }
+
+  if (!fine) return <div className="inline-block">{children}</div>
 
   return (
     <motion.div ref={ref} onMouseMove={onMove} onMouseLeave={onLeave} style={{ x, y }} className="inline-block">
