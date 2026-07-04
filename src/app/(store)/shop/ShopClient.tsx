@@ -3,7 +3,8 @@
 import { useMemo, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Search, SlidersHorizontal, X, Check, ChevronDown } from "lucide-react";
-import { products, categories, brands, type Category } from "@/lib/products";
+import { products as catalog, categories, brands, type Category } from "@/lib/products";
+import { useCustomProducts, useHiddenIds } from "@/components/store/SalePriceProvider";
 import ProductCard from "@/components/store/ProductCard";
 
 type Sort = "featured" | "price-asc" | "price-desc" | "rating" | "discount";
@@ -19,6 +20,16 @@ const sortLabels: Record<Sort, string> = {
 export default function ShopClient() {
   const params = useSearchParams();
   const router = useRouter();
+  const custom = useCustomProducts();
+  const hiddenIds = useHiddenIds();
+  const products = useMemo(
+    () => [...catalog.filter((p) => !hiddenIds.includes(p.id)), ...custom],
+    [custom, hiddenIds],
+  );
+  const allBrands = useMemo(
+    () => Array.from(new Set([...brands, ...custom.map((p) => p.brand)])).sort(),
+    [custom],
+  );
 
   const initialCat = (params.get("cat") as Category) || "All";
   const [cat, setCat] = useState<Category | "All">(initialCat);
@@ -60,7 +71,7 @@ export default function ShopClient() {
       default: list = [...list].sort((a, b) => Number(b.bestseller) - Number(a.bestseller) || b.sold - a.sold);
     }
     return list;
-  }, [cat, sub, brand, query, sort, maxPrice]);
+  }, [products, cat, sub, brand, query, sort, maxPrice]);
 
   function pickCat(c: Category | "All") {
     setCat(c);
@@ -92,7 +103,7 @@ export default function ShopClient() {
       <FilterGroup title="Brand">
         <div className="max-h-52 space-y-0.5 overflow-y-auto pr-1">
           <FilterRadio label="All brands" active={!brand} onClick={() => setBrand(null)} />
-          {brands.map((b) => (
+          {allBrands.map((b) => (
             <FilterRadio key={b} label={b} active={brand === b} onClick={() => setBrand(b)} count={products.filter((p) => p.brand === b).length} />
           ))}
         </div>

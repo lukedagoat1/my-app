@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { products } from "@/lib/products";
 import type { StockEntry } from "@/lib/stock";
+import ListingsTab from "./ListingsTab";
 
 const WINE = "#7a1e2e";
 
@@ -347,9 +348,15 @@ function InfoBanner({ children }: { children: React.ReactNode }) {
 export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
-  const [tab, setTab] = useState<"prices" | "stock">("prices");
+  const [tab, setTab] = useState<"listings" | "prices" | "stock">("listings");
 
-  if (!authed) return <LoginScreen onLogin={(pw) => { setPassword(pw); setAuthed(true); }} />;
+  // Stay logged in across refreshes (this tab only)
+  useEffect(() => {
+    const saved = sessionStorage.getItem("sara-admin-pw");
+    if (saved) { setPassword(saved); setAuthed(true); }
+  }, []);
+
+  if (!authed) return <LoginScreen onLogin={(pw) => { setPassword(pw); setAuthed(true); sessionStorage.setItem("sara-admin-pw", pw); }} />;
 
   return (
     <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 20px" }}>
@@ -359,14 +366,14 @@ export default function AdminPage() {
           <h1 style={{ fontWeight: 800, fontSize: 24, color: WINE, margin: 0 }}>Sara&apos;s Trading Post — Admin</h1>
           <p style={{ color: "#999", fontSize: 12, marginTop: 4 }}>Changes take effect immediately for all visitors.</p>
         </div>
-        <button onClick={() => { setAuthed(false); setPassword(""); }} style={{ background: "none", border: "1px solid #ddd", borderRadius: 8, padding: "7px 14px", fontSize: 12, color: "#888", cursor: "pointer" }}>
+        <button onClick={() => { setAuthed(false); setPassword(""); sessionStorage.removeItem("sara-admin-pw"); }} style={{ background: "none", border: "1px solid #ddd", borderRadius: 8, padding: "7px 14px", fontSize: 12, color: "#888", cursor: "pointer" }}>
           Log out
         </button>
       </div>
 
       {/* Tabs */}
       <div style={{ display: "flex", gap: 4, marginBottom: 24, borderBottom: "2px solid #e8e0d8", paddingBottom: 0 }}>
-        {(["prices", "stock"] as const).map((t) => (
+        {(["listings", "prices", "stock"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)} style={{
             background: "none", border: "none", cursor: "pointer",
             padding: "10px 20px", fontWeight: 700, fontSize: 14,
@@ -374,12 +381,12 @@ export default function AdminPage() {
             borderBottom: tab === t ? `2px solid ${WINE}` : "2px solid transparent",
             marginBottom: -2, textTransform: "capitalize",
           }}>
-            {t === "prices" ? "💰 Sale Prices" : "📦 Inventory / Stock"}
+            {t === "listings" ? "🛍️ My Listings" : t === "prices" ? "💰 Sale Prices" : "📦 Inventory / Stock"}
           </button>
         ))}
       </div>
 
-      {tab === "prices" ? <PricesTab password={password} /> : <StockTab password={password} />}
+      {tab === "listings" ? <ListingsTab password={password} /> : tab === "prices" ? <PricesTab password={password} /> : <StockTab password={password} />}
 
       <p style={{ textAlign: "center", color: "#ccc", fontSize: 11, paddingBottom: 24 }}>Sara&apos;s Trading Post · Admin</p>
     </div>

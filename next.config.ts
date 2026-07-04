@@ -12,7 +12,7 @@ const cspHeader = [
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
-  "img-src 'self' data: https://i.ebayimg.com https://*.stripe.com",
+  "img-src 'self' data: https://i.ebayimg.com https://*.stripe.com https://raw.githubusercontent.com",
   "connect-src 'self' https://api.stripe.com https://nominatim.openstreetmap.org https://api.web3forms.com",
   "media-src 'none'",
   "object-src 'none'",

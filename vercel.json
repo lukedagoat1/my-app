@@ -1,3 +1,8 @@
 {
-  "name": "saras-trading-post"
+  "name": "saras-trading-post",
+  "git": {
+    "deploymentEnabled": {
+      "data": false
+    }
+  }
 }
