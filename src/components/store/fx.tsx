@@ -8,6 +8,10 @@ import { useEffect, useRef, type ReactNode } from "react";
 const reducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// Tilt only makes sense with a hovering cursor; on touch it fights scrolling.
+const finePointer = () =>
+  typeof window !== "undefined" && window.matchMedia("(pointer: fine)").matches;
+
 /** Pointer-tracked 3D tilt. Children at different translateZ get real parallax. */
 export function Tilt({
   children,
@@ -25,7 +29,7 @@ export function Tilt({
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || reducedMotion()) return;
+    if (!el || reducedMotion() || !finePointer()) return;
     const inner = el.firstElementChild as HTMLElement | null;
     const glow = el.querySelector<HTMLElement>("[data-glare]");
     if (!inner) return;

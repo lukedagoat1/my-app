@@ -96,7 +96,7 @@ export default function ListingsTab({ password }: { password: string }) {
       body: JSON.stringify(body),
     });
     setSaving(false);
-    if (res.ok) { setDraft(null); flash("✓ Listing saved! It's live in the shop."); load(); }
+    if (res.ok) { setDraft(null); flash("✓ Listing saved! Live in the shop within about 30 seconds."); load(); }
     else { const d = await res.json().catch(() => ({})) as { error?: string }; flash(`✗ ${d.error ?? "Error saving"}`); }
   }
 
