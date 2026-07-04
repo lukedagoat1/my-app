@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { products } from "@/lib/products";
+import { products, type Product } from "@/lib/products";
 import type { StockEntry } from "@/lib/stock";
 import ListingsTab from "./ListingsTab";
 import OrdersTab from "./OrdersTab";
@@ -50,7 +50,8 @@ function LoginScreen({ onLogin }: { onLogin: (pw: string) => void }) {
 
 // ── Prices tab ────────────────────────────────────────────────────────────────
 
-function PricesTab({ password }: { password: string }) {
+function PricesTab({ password, allProducts }: { password: string; allProducts: Product[] }) {
+  const products = allProducts;
   const [prices, setPrices] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
@@ -154,7 +155,8 @@ function PricesTab({ password }: { password: string }) {
 
 // ── Stock tab ─────────────────────────────────────────────────────────────────
 
-function StockTab({ password }: { password: string }) {
+function StockTab({ password, allProducts }: { password: string; allProducts: Product[] }) {
+  const products = allProducts;
   const [stock, setStock] = useState<Record<string, StockEntry>>({});
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -350,12 +352,24 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
   const [tab, setTab] = useState<"listings" | "orders" | "prices" | "stock">("listings");
+  const [custom, setCustom] = useState<Product[]>([]);
 
   // Stay logged in across refreshes (this tab only)
   useEffect(() => {
     const saved = sessionStorage.getItem("sara-admin-pw");
     if (saved) { setPassword(saved); setAuthed(true); }
   }, []);
+
+  // Sara's own listings join the catalog in the Prices + Stock tabs
+  useEffect(() => {
+    if (!authed) return;
+    fetch("/api/admin/listings", { headers: { "x-admin-password": password } })
+      .then(r => r.json())
+      .then((d: { custom?: Product[] }) => setCustom(d.custom ?? []))
+      .catch(() => {});
+  }, [authed, password, tab]);
+
+  const allProducts = [...products, ...custom];
 
   if (!authed) return <LoginScreen onLogin={(pw) => { setPassword(pw); setAuthed(true); sessionStorage.setItem("sara-admin-pw", pw); }} />;
 
@@ -389,8 +403,8 @@ export default function AdminPage() {
 
       {tab === "listings" ? <ListingsTab password={password} />
         : tab === "orders" ? <OrdersTab password={password} />
-        : tab === "prices" ? <PricesTab password={password} />
-        : <StockTab password={password} />}
+        : tab === "prices" ? <PricesTab password={password} allProducts={allProducts} />
+        : <StockTab password={password} allProducts={allProducts} />}
 
       <p style={{ textAlign: "center", color: "#ccc", fontSize: 11, paddingBottom: 24 }}>Sara&apos;s Trading Post · Admin</p>
     </div>
