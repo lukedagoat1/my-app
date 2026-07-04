@@ -2,16 +2,18 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Check, Plus, SlidersHorizontal } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { useCart, money } from "@/lib/cart";
 import { StarRating, ProductImage } from "./bits";
 import { useSalePrices, useStock } from "./SalePriceProvider";
+import { Tilt, flyToCart } from "./fx";
 
 export default function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const add = useCart((s) => s.add);
   const router = useRouter();
+  const imgRef = useRef<HTMLDivElement>(null);
   const [added, setAdded] = useState(false);
   const salePrices = useSalePrices();
   const stockQtys = useStock();
@@ -31,17 +33,19 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
       return;
     }
     add({ id: product.id, title: product.title, brand: product.brand, price: effectivePrice, image: product.image });
+    flyToCart(imgRef.current, product.image);
     setAdded(true);
     setTimeout(() => setAdded(false), 1400);
   }
 
   return (
+    <Tilt max={6} glare className="h-full">
     <Link
       href={`/product/${product.id}`}
-      className="s-card-hover group flex flex-col overflow-hidden rounded-2xl border border-[var(--s-line)] bg-white s-shadow"
+      className="s-card-hover group flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--s-line)] bg-white s-shadow"
       style={{ animationDelay: `${Math.min(index, 8) * 60}ms` }}
     >
-      <div className="s-shine-wrap relative aspect-square overflow-hidden bg-[var(--s-cream-2)]">
+      <div ref={imgRef} className="s-shine-wrap relative aspect-square overflow-hidden bg-[var(--s-cream-2)]">
         <ProductImage
           src={product.image}
           alt={product.title}
@@ -111,5 +115,6 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
         </div>
       </div>
     </Link>
+    </Tilt>
   );
 }

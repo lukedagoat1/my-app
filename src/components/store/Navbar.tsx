@@ -97,6 +97,7 @@ export default function Navbar() {
             <Link
               href="/cart"
               aria-label="Cart"
+              data-cart-icon
               className="relative grid h-9 w-9 place-items-center rounded-full text-[var(--s-ink)] hover:bg-[var(--s-cream-2)] transition-colors"
             >
               <ShoppingBag className="h-[18px] w-[18px]" />

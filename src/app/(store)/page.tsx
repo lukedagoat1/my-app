@@ -6,6 +6,7 @@ import { products, brands } from "@/lib/products";
 import { reviews, trustStats } from "@/lib/reviews";
 import ProductCard from "@/components/store/ProductCard";
 import { ProductImage, StarRating } from "@/components/store/bits";
+import { Tilt } from "@/components/store/fx";
 
 const bestsellers = [...products].sort((a, b) => b.sold - a.sold).slice(0, 8);
 const heroPicks = [...products].filter((p) => p.bestseller).slice(0, 3);
@@ -59,30 +60,32 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Hero product collage */}
+          {/* Hero product collage — pointer-tracked 3D scene */}
           <div className="s-reveal relative mx-auto w-full max-w-md lg:max-w-none" style={{ animationDelay: "120ms" }}>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-4">
-                {heroPicks[0] && <HeroTile id={heroPicks[0].id} img={heroPicks[0].image} title={heroPicks[0].title} brand={heroPicks[0].brand} tall />}
-                {heroPicks[1] && <HeroTile id={heroPicks[1].id} img={heroPicks[1].image} title={heroPicks[1].title} brand={heroPicks[1].brand} />}
-              </div>
-              <div className="space-y-4 pt-10">
-                {heroPicks[2] && <HeroTile id={heroPicks[2].id} img={heroPicks[2].image} title={heroPicks[2].title} brand={heroPicks[2].brand} />}
-                <div className="rounded-2xl bg-[var(--s-wine)] p-5 text-white s-shadow-lg">
-                  <div className="flex items-center gap-1 text-[var(--s-gold-soft)]">
-                    {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}
+            <Tilt max={7}>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4 s-depth-1">
+                  {heroPicks[0] && <HeroTile id={heroPicks[0].id} img={heroPicks[0].image} title={heroPicks[0].title} brand={heroPicks[0].brand} tall />}
+                  {heroPicks[1] && <HeroTile id={heroPicks[1].id} img={heroPicks[1].image} title={heroPicks[1].title} brand={heroPicks[1].brand} />}
+                </div>
+                <div className="space-y-4 pt-10 s-depth-2">
+                  {heroPicks[2] && <HeroTile id={heroPicks[2].id} img={heroPicks[2].image} title={heroPicks[2].title} brand={heroPicks[2].brand} />}
+                  <div className="rounded-2xl bg-[var(--s-wine)] p-5 text-white s-shadow-lg">
+                    <div className="flex items-center gap-1 text-[var(--s-gold-soft)]">
+                      {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}
+                    </div>
+                    <p className="mt-2 font-display text-2xl font-bold leading-none">99.8%</p>
+                    <p className="text-xs text-[var(--s-rose-soft)]">positive feedback from real buyers</p>
                   </div>
-                  <p className="mt-2 font-display text-2xl font-bold leading-none">99.8%</p>
-                  <p className="text-xs text-[var(--s-rose-soft)]">positive feedback from real buyers</p>
+                </div>
+                <div className="s-float s-depth-3 absolute -bottom-5 -left-5 hidden rounded-2xl bg-white px-4 py-3 s-shadow-lg sm:block">
+                  <p className="flex items-center gap-2 text-xs font-semibold text-[var(--s-ink)]">
+                    <span className="grid h-7 w-7 place-items-center rounded-full bg-green-100 text-green-700"><Lock className="h-3.5 w-3.5" /></span>
+                    Authenticity guaranteed
+                  </p>
                 </div>
               </div>
-            </div>
-            <div className="s-float absolute -bottom-5 -left-5 hidden rounded-2xl bg-white px-4 py-3 s-shadow-lg sm:block">
-              <p className="flex items-center gap-2 text-xs font-semibold text-[var(--s-ink)]">
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-green-100 text-green-700"><Lock className="h-3.5 w-3.5" /></span>
-                Authenticity guaranteed
-              </p>
-            </div>
+            </Tilt>
           </div>
         </div>
 

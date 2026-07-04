@@ -39,7 +39,7 @@ export function ProductImage({
 }) {
   const [err, setErr] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  if (err) {
+  if (err || !src) {
     return (
       <div className={`grid place-items-center bg-[var(--s-rose-soft)] ${className}`}>
         <span className="font-display text-3xl text-[var(--s-wine)]/40">Sara&apos;s</span>
