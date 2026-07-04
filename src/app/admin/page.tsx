@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { products } from "@/lib/products";
 import type { StockEntry } from "@/lib/stock";
 import ListingsTab from "./ListingsTab";
+import OrdersTab from "./OrdersTab";
 
 const WINE = "#7a1e2e";
 
@@ -348,7 +349,7 @@ function InfoBanner({ children }: { children: React.ReactNode }) {
 export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
-  const [tab, setTab] = useState<"listings" | "prices" | "stock">("listings");
+  const [tab, setTab] = useState<"listings" | "orders" | "prices" | "stock">("listings");
 
   // Stay logged in across refreshes (this tab only)
   useEffect(() => {
@@ -373,7 +374,7 @@ export default function AdminPage() {
 
       {/* Tabs */}
       <div style={{ display: "flex", gap: 4, marginBottom: 24, borderBottom: "2px solid #e8e0d8", paddingBottom: 0 }}>
-        {(["listings", "prices", "stock"] as const).map((t) => (
+        {(["listings", "orders", "prices", "stock"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)} style={{
             background: "none", border: "none", cursor: "pointer",
             padding: "10px 20px", fontWeight: 700, fontSize: 14,
@@ -381,12 +382,15 @@ export default function AdminPage() {
             borderBottom: tab === t ? `2px solid ${WINE}` : "2px solid transparent",
             marginBottom: -2, textTransform: "capitalize",
           }}>
-            {t === "listings" ? "🛍️ My Listings" : t === "prices" ? "💰 Sale Prices" : "📦 Inventory / Stock"}
+            {t === "listings" ? "🛍️ My Listings" : t === "orders" ? "🧾 Orders" : t === "prices" ? "💰 Sale Prices" : "📦 Inventory / Stock"}
           </button>
         ))}
       </div>
 
-      {tab === "listings" ? <ListingsTab password={password} /> : tab === "prices" ? <PricesTab password={password} /> : <StockTab password={password} />}
+      {tab === "listings" ? <ListingsTab password={password} />
+        : tab === "orders" ? <OrdersTab password={password} />
+        : tab === "prices" ? <PricesTab password={password} />
+        : <StockTab password={password} />}
 
       <p style={{ textAlign: "center", color: "#ccc", fontSize: 11, paddingBottom: 24 }}>Sara&apos;s Trading Post · Admin</p>
     </div>

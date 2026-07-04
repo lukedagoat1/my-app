@@ -185,7 +185,13 @@ export default function CheckoutPage() {
       const res = await fetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: totals.total, email: f.email, name: `${f.first} ${f.last}` }),
+        body: JSON.stringify({
+          amount: totals.total,
+          email: f.email,
+          name: `${f.first} ${f.last}`,
+          orderId,
+          items: lines.map((l) => ({ id: l.id, qty: l.qty })),
+        }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);

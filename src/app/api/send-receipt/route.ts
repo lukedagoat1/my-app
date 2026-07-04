@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import Stripe from "stripe";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const bwipjs = require("bwip-js") as { toBuffer: (opts: Record<string, unknown>) => Promise<Buffer> };
 
@@ -27,6 +28,26 @@ async function generateBarcode(text: string): Promise<string> {
 export async function POST(req: NextRequest) {
   try {
     const order = await req.json();
+
+    // Only email receipts for verified paid orders — this endpoint is public,
+    // and Sara's Gmail must not be a free spam relay.
+    const piId = String(order.paymentIntentId ?? "");
+    if (!piId.startsWith("pi_") || !process.env.STRIPE_SECRET_KEY) {
+      return NextResponse.json({ error: "Payment verification required" }, { status: 403 });
+    }
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2026-05-27.dahlia",
+      httpClient: Stripe.createFetchHttpClient(),
+    });
+    const pi = await stripe.paymentIntents.retrieve(piId);
+    if (
+      pi.status !== "succeeded" ||
+      pi.metadata.store !== "sarastradingpost" ||
+      Math.round(Number(order.totals?.total) * 100) !== pi.amount ||
+      String(order.email).toLowerCase() !== String(pi.receipt_email ?? "").toLowerCase()
+    ) {
+      return NextResponse.json({ error: "Payment not verified" }, { status: 403 });
+    }
 
     // Parse combined address string: "123 Main St[, Apt X], City, ST ZIP"
     const addrParts = (order.address as string).split(",").map((s: string) => s.trim());

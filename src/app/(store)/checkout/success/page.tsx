@@ -44,17 +44,17 @@ function SuccessContent() {
           setStatus("success");
           sessionStorage.removeItem("sara-last-order");
           clear();
-          // Send receipt email (fire and forget)
+          // Send receipt email (fire and forget; server verifies payment with Stripe)
           fetch("/api/send-receipt", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(parsed),
+            body: JSON.stringify({ ...parsed, paymentIntentId: paymentIntent }),
           }).catch(() => {});
-          // Decrement stock for each purchased item (fire and forget)
+          // Fulfil: verify payment, decrement stock, log the order (idempotent)
           fetch("/api/decrement-stock", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ items: parsed.items.map((it: { id: string; qty: number }) => ({ id: it.id, qty: it.qty })) }),
+            body: JSON.stringify({ paymentIntentId: paymentIntent }),
           }).catch(() => {});
         }
       } else if (paymentIntent) {

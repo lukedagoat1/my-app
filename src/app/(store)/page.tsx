@@ -6,7 +6,7 @@ import { products, brands } from "@/lib/products";
 import { reviews, trustStats } from "@/lib/reviews";
 import ProductCard from "@/components/store/ProductCard";
 import { ProductImage, StarRating } from "@/components/store/bits";
-import { Tilt } from "@/components/store/fx";
+import { Tilt, Reveal } from "@/components/store/fx";
 
 const bestsellers = [...products].sort((a, b) => b.sold - a.sold).slice(0, 8);
 const heroPicks = [...products].filter((p) => p.bestseller).slice(0, 3);
@@ -104,11 +104,13 @@ export default function HomePage() {
       {/* TRUST STATS */}
       <section className="mx-auto max-w-7xl px-6 py-14">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {trustStats.map((s) => (
-            <div key={s.label} className="rounded-2xl border border-[var(--s-line)] bg-white p-6 text-center s-shadow">
-              <p className="font-display text-3xl font-bold text-[var(--s-wine)]">{s.value}</p>
-              <p className="mt-1 text-xs font-medium uppercase tracking-wide text-[var(--s-ink-soft)]">{s.label}</p>
-            </div>
+          {trustStats.map((s, i) => (
+            <Reveal key={s.label} delay={i * 90}>
+              <div className="rounded-2xl border border-[var(--s-line)] bg-white p-6 text-center s-shadow">
+                <p className="font-display text-3xl font-bold text-[var(--s-wine)]">{s.value}</p>
+                <p className="mt-1 text-xs font-medium uppercase tracking-wide text-[var(--s-ink-soft)]">{s.label}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -117,8 +119,9 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-6 py-6">
         <SectionHeading eyebrow="Shop by category" title="Find your next obsession" />
         <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {catCards.map((c) => (
-            <Link key={c.name} href={c.href} className="s-card-hover group relative overflow-hidden rounded-3xl border border-[var(--s-line)] bg-white s-shadow">
+          {catCards.map((c, i) => (
+            <Reveal key={c.name} delay={i * 110}>
+            <Link href={c.href} className="s-card-hover group relative block overflow-hidden rounded-3xl border border-[var(--s-line)] bg-white s-shadow">
               <div className="aspect-[5/4] overflow-hidden bg-[var(--s-cream-2)]">
                 {c.img && <ProductImage src={c.img} alt={c.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />}
               </div>
@@ -131,6 +134,7 @@ export default function HomePage() {
                 </span>
               </div>
             </Link>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -188,8 +192,9 @@ export default function HomePage() {
           </div>
         </div>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {reviews.slice(0, 6).map((r) => (
-            <figure key={r.name} className="flex flex-col rounded-2xl border border-[var(--s-line)] bg-white p-6 s-shadow">
+          {reviews.slice(0, 6).map((r, i) => (
+            <Reveal key={r.name} delay={(i % 3) * 100}>
+            <figure className="flex h-full flex-col rounded-2xl border border-[var(--s-line)] bg-white p-6 s-shadow">
               <Quote className="h-7 w-7 text-[var(--s-rose)]" />
               <StarRating value={r.rating} size={14} />
               <figcaption className="mt-3 font-display text-base font-bold text-[var(--s-ink)]">{r.title}</figcaption>
@@ -202,6 +207,7 @@ export default function HomePage() {
                 </div>
               </div>
             </figure>
+            </Reveal>
           ))}
         </div>
         <div className="mt-10 text-center">
