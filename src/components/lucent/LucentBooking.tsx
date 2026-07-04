@@ -17,9 +17,14 @@ const PROJECT_TYPES = [
   'I’m not sure — help me figure it out',
 ]
 
-const BUDGETS = ['Under $500', '$500 – $1,500', '$1,500 – $5,000', '$5,000+', 'Not sure yet']
+const PLANS = [
+  'Basic — $600 + $30/mo',
+  'Pro — $900 + $50/mo (most popular)',
+  'Premium — $1,400 + $70/mo',
+  'Not sure yet — help me choose',
+]
 
-const CONTACTS = ['Luke', 'Brayden']
+const CONTACTS = ['Luke', 'Mark']
 
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 
@@ -85,7 +90,7 @@ export function LucentBooking() {
       </div>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <Select label="What do you need?" name="Project" options={PROJECT_TYPES} />
-        <Select label="Budget range" name="Budget" options={BUDGETS} />
+        <Select label="Plan selection" name="Plan" options={PLANS} />
       </div>
       <div className="mt-4">
         <Select label="Who'd you speak with?" name="Spoke with" options={CONTACTS} />
