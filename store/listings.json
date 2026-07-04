@@ -1,22 +1,4 @@
 {
-  "custom": [
-    {
-      "id": "sara-dbofeqm4",
-      "title": "TEST Listing � delete me",
-      "brand": "TestBrand",
-      "category": "Fragrance",
-      "sub": "Perfume",
-      "price": 19.99,
-      "compareAt": 39.99,
-      "image": "",
-      "rating": 5,
-      "reviews": 0,
-      "sold": 0,
-      "condition": "New / Sealed",
-      "blurb": "A test listing.",
-      "bestseller": false,
-      "description": "End-to-end test of the durable store."
-    }
-  ],
+  "custom": [],
   "hidden": []
 }
