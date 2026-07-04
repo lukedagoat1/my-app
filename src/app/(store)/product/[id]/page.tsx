@@ -30,5 +30,32 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const product = await resolveProduct(id);
   if (!product) notFound();
   const related = relatedTo(product, 4);
-  return <ProductDetail product={product} related={related} />;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.title,
+    image: product.image || undefined,
+    description: product.description ?? product.blurb,
+    brand: { "@type": "Brand", name: product.brand },
+    offers: {
+      "@type": "Offer",
+      price: product.price.toFixed(2),
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+      itemCondition: /new|sealed/i.test(product.condition)
+        ? "https://schema.org/NewCondition"
+        : "https://schema.org/UsedCondition",
+    },
+    ...(product.reviews > 0 && {
+      aggregateRating: { "@type": "AggregateRating", ratingValue: product.rating, reviewCount: product.reviews },
+    }),
+  };
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <ProductDetail product={product} related={related} />
+    </>
+  );
 }

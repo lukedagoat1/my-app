@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Minus, Plus, ShoppingBag, Check, BadgeCheck, Truck, RotateCcw, Gift, ChevronRight, Heart, Quote,
 } from "lucide-react";
@@ -11,9 +11,11 @@ import { StarRating, ProductImage } from "@/components/store/bits";
 import ProductCard from "@/components/store/ProductCard";
 import { reviews } from "@/lib/reviews";
 import { useSalePrices, useStock } from "@/components/store/SalePriceProvider";
+import { Tilt, flyToCart } from "@/components/store/fx";
 
 export default function ProductDetail({ product, related }: { product: Product; related: Product[] }) {
   const add = useCart((s) => s.add);
+  const imgRef = useRef<HTMLDivElement>(null);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [variant, setVariant] = useState<string | null>(null);
@@ -37,6 +39,7 @@ export default function ProductDetail({ product, related }: { product: Product; 
       return;
     }
     add({ id: product.id, title: product.title, brand: product.brand, price: effectivePrice, image: product.image, ...(variant ? { variant } : {}) }, qty);
+    flyToCart(imgRef.current, product.image);
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
   }
@@ -57,7 +60,8 @@ export default function ProductDetail({ product, related }: { product: Product; 
       <div className="mt-6 grid gap-10 lg:grid-cols-2">
         {/* image */}
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <div className="relative overflow-hidden rounded-3xl border border-[var(--s-line)] bg-white s-shadow">
+          <Tilt max={8} glare>
+          <div ref={imgRef} className="relative overflow-hidden rounded-3xl border border-[var(--s-line)] bg-white s-shadow">
             <div className="aspect-square overflow-hidden bg-[var(--s-cream-2)]">
               <ProductImage src={product.image} alt={product.title} className="h-full w-full object-cover" />
             </div>
@@ -66,6 +70,7 @@ export default function ProductDetail({ product, related }: { product: Product; 
               {discount > 0 && <span className="rounded-full bg-[var(--s-gold)] px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[var(--s-ink)]">Save {discount}%</span>}
             </div>
           </div>
+          </Tilt>
           <div className="mt-4 grid grid-cols-3 gap-3">
             {[
               { icon: BadgeCheck, t: "100% Authentic" },
