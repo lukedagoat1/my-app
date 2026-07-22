@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import Stripe from "stripe";
+import { isRateLimited } from "@/lib/rateLimit";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const bwipjs = require("bwip-js") as { toBuffer: (opts: Record<string, unknown>) => Promise<Buffer> };
 
@@ -26,6 +27,9 @@ async function generateBarcode(text: string): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
+  if (isRateLimited(req, "send-receipt", 10, 60_000)) {
+    return NextResponse.json({ error: "Too many requests, please try again shortly." }, { status: 429 });
+  }
   try {
     const order = await req.json();
 

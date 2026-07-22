@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { isRateLimited } from "@/lib/rateLimit";
 
 // Initialised lazily so a missing env var at build time doesn't crash the build
 function getStripeServer() {
@@ -10,6 +11,10 @@ function getStripeServer() {
 }
 
 export async function POST(req: NextRequest) {
+  // Public, unauthenticated, calls out to Stripe — cap abuse (20 attempts/min/IP).
+  if (isRateLimited(req, "create-payment-intent", 20, 60_000)) {
+    return NextResponse.json({ error: "Too many requests, please try again shortly." }, { status: 429 });
+  }
   try {
     const stripe = getStripeServer();
     const { amount, email, name, orderId, items } = await req.json();
