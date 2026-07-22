@@ -140,7 +140,6 @@ function PlaceOrderButton({
 export default function CheckoutPage() {
   const hydrated = useHydrated();
   const lines = useCart((s) => s.lines);
-  const totals = useCartTotals();
 
   const [step, setStep] = useState<Step>(1);
   const [f, setF] = useState(empty);
@@ -148,6 +147,13 @@ export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loadingIntent, setLoadingIntent] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  // Live estimate while shopping/entering address; replaced with the
+  // server-verified totals (from create-payment-intent) once payment starts —
+  // that's the number actually charged, so it must be the source of truth
+  // from step 2 onward.
+  const estimate = useCartTotals(f.state);
+  const [verifiedTotals, setVerifiedTotals] = useState<typeof estimate | null>(null);
+  const totals = verifiedTotals ?? estimate;
 
   function set<K extends keyof typeof empty>(k: K, v: string) {
     setF((s) => ({ ...s, [k]: v }));
@@ -186,16 +192,17 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: totals.total,
           email: f.email,
           name: `${f.first} ${f.last}`,
           orderId,
           items: lines.map((l) => ({ id: l.id, qty: l.qty })),
+          state: f.state,
         }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setClientSecret(data.clientSecret);
+      setVerifiedTotals(data.totals);
       setStep(2);
     } catch (err: unknown) {
       setErrors({ _general: err instanceof Error ? err.message : "Could not initialise payment. Please try again." });
@@ -362,7 +369,7 @@ export default function CheckoutPage() {
         </div>
 
         <div className="lg:sticky lg:top-24 lg:self-start space-y-3">
-          <OrderSummary showItems />
+          <OrderSummary showItems totals={totals} />
           <div className="rounded-2xl border border-[var(--s-line)] bg-white p-4 text-xs text-[var(--s-ink-soft)]">
             <p className="flex items-center gap-2 font-semibold text-[var(--s-ink)]">
               <BadgeCheck className="h-4 w-4 text-green-600" /> Shop with confidence

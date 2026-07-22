@@ -24,9 +24,21 @@ export function FreeShipBar() {
   );
 }
 
-export default function OrderSummary({ showItems = false, cta }: { showItems?: boolean; cta?: React.ReactNode }) {
+type Totals = { subtotal: number; shipping: number; tax: number; total: number };
+
+export default function OrderSummary({
+  showItems = false,
+  cta,
+  totals,
+}: {
+  showItems?: boolean;
+  cta?: React.ReactNode;
+  /** Pass the checkout page's live/verified totals so this matches what's actually charged. Omit to estimate from the cart alone (pre-address). */
+  totals?: Totals;
+}) {
   const lines = useCart((s) => s.lines);
-  const { subtotal, shipping, tax, total } = useCartTotals();
+  const fallback = useCartTotals();
+  const { subtotal, shipping, tax, total } = totals ?? fallback;
 
   return (
     <div className="rounded-2xl border border-[var(--s-line)] bg-white p-6 s-shadow">
