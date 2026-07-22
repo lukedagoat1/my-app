@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readStock, writeStock } from "@/lib/stock";
-
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "sara2024";
-const ok = (req: NextRequest) => req.headers.get("x-admin-password") === ADMIN_PASSWORD;
+import { isAdmin as ok } from "@/lib/adminAuth";
 
 export async function GET(req: NextRequest) {
   if (!ok(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

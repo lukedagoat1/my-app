@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { decrementStock } from "@/lib/stock";
-import { recordOrder } from "@/lib/orders";
+import { fulfillPaymentIntent } from "@/lib/fulfill";
 
-// Fulfils a PAID checkout: verifies the payment intent with Stripe, reads the
-// purchased items from its metadata (never from the client), decrements stock
-// once, and appends to the durable order log. Replays are no-ops.
+// Client-triggered fulfilment path — fires right after checkout for instant
+// stock updates. The Stripe webhook (/api/webhooks/stripe) is the durable
+// safety net if the browser never gets here (closed tab, redirect payment
+// methods). Both call the same idempotent fulfillPaymentIntent.
 export async function POST(req: NextRequest) {
   try {
     const { paymentIntentId } = await req.json() as { paymentIntentId?: string };
@@ -20,24 +20,8 @@ export async function POST(req: NextRequest) {
     if (pi.status !== "succeeded" || pi.metadata.store !== "sarastradingpost") {
       return NextResponse.json({ error: "Payment not verified" }, { status: 403 });
     }
-
-    const items = (pi.metadata.items ?? "")
-      .split(",")
-      .map((pair) => { const [id, qty] = pair.split(":"); return { id, qty: Number(qty) || 1 }; })
-      .filter((it) => it.id);
-
-    const isNew = await recordOrder({
-      pi: pi.id,
-      orderId: pi.metadata.order_id ?? "",
-      date: new Date(pi.created * 1000).toISOString(),
-      name: pi.metadata.customer_name ?? "",
-      email: pi.receipt_email ?? "",
-      items,
-      amount: pi.amount / 100,
-    });
-    if (isNew && items.length) await decrementStock(items);
-
-    return NextResponse.json({ ok: true, recorded: isNew });
+    const recorded = await fulfillPaymentIntent(pi);
+    return NextResponse.json({ ok: true, recorded });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("[decrement-stock]", message);

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { uploadFile } from "@/lib/db";
+import { isAdmin } from "@/lib/adminAuth";
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "sara2024";
 const MAX_BYTES = 4 * 1024 * 1024; // 4MB — plenty for a product photo
 
 /** Body: { name: string, data: string (base64) } → { url } */
 export async function POST(req: NextRequest) {
-  if (req.headers.get("x-admin-password") !== ADMIN_PASSWORD) {
+  if (!isAdmin(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {

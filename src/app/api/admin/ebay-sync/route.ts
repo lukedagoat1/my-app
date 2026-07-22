@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readStock, writeStock } from "@/lib/stock";
-
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "sara2024";
+import { isAdmin } from "@/lib/adminAuth";
 
 async function getEbayToken(): Promise<string> {
   const appId = process.env.EBAY_APP_ID;
@@ -34,7 +33,7 @@ async function fetchEbayQty(token: string, itemId: string): Promise<number | nul
 }
 
 export async function POST(req: NextRequest) {
-  if (req.headers.get("x-admin-password") !== ADMIN_PASSWORD) {
+  if (!isAdmin(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {

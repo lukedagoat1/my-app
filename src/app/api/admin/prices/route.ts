@@ -1,19 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readSalePrices, writeSalePrices } from "@/lib/sale-prices";
-
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "sara2024";
-
-function isAuthorized(req: NextRequest) {
-  return req.headers.get("x-admin-password") === ADMIN_PASSWORD;
-}
+import { isAdmin } from "@/lib/adminAuth";
 
 export async function GET(req: NextRequest) {
-  if (!isAuthorized(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   return NextResponse.json(await readSalePrices());
 }
 
 export async function PUT(req: NextRequest) {
-  if (!isAuthorized(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const body = await req.json() as Record<string, unknown>;
     const cleaned: Record<string, number> = {};

@@ -1,22 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readListings, writeListings } from "@/lib/listings";
+import { isAdmin } from "@/lib/adminAuth";
 import type { Product, Category } from "@/lib/products";
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "sara2024";
 const CATEGORIES: Category[] = ["Makeup", "Skincare", "Fragrance"];
 
-function isAuthorized(req: NextRequest) {
-  return req.headers.get("x-admin-password") === ADMIN_PASSWORD;
-}
-
 export async function GET(req: NextRequest) {
-  if (!isAuthorized(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   return NextResponse.json(await readListings(true));
 }
 
 /** Upsert a custom listing. Body: partial product; id present = edit. */
 export async function PUT(req: NextRequest) {
-  if (!isAuthorized(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const body = await req.json() as Partial<Product>;
     const title = String(body.title ?? "").trim();
@@ -61,7 +57,7 @@ export async function PUT(req: NextRequest) {
 
 /** Delete a custom listing, or toggle hide on a catalog product. Body: { id, action: "delete" | "hide" | "show" } */
 export async function POST(req: NextRequest) {
-  if (!isAuthorized(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const { id, action } = await req.json() as { id: string; action: "delete" | "hide" | "show" };
     if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
