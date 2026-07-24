@@ -2,7 +2,7 @@ import { getProduct } from "@/lib/products";
 import { readListings } from "@/lib/listings";
 import { readSalePrices } from "@/lib/sale-prices";
 import { getStockQtys } from "@/lib/stock";
-import { SHIPPING_THRESHOLD, SHIPPING_FLAT, TAX_RATE, TAX_STATES } from "@/lib/cart";
+import { SHIPPING_THRESHOLD, SHIPPING_FLAT, TAX_RATE, TAX_STATES } from "@/lib/money";
 
 /**
  * Recomputes an order total server-side from the live catalog/listings/stock —

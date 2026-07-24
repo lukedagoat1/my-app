@@ -73,13 +73,8 @@ export function useCartCount() {
   return n;
 }
 
-export const SHIPPING_THRESHOLD = 75;
-export const SHIPPING_FLAT = 6.95;
-export const TAX_RATE = 0.0825;
-// Sara has sales-tax nexus only in Texas — extend when the business
-// registers in more states. Shared with the server-side price recompute
-// in src/lib/pricing.ts so the checkout estimate matches the real charge.
-export const TAX_STATES = new Set(["TX"]);
+export { SHIPPING_THRESHOLD, SHIPPING_FLAT, TAX_RATE, TAX_STATES } from "@/lib/money";
+import { SHIPPING_THRESHOLD, SHIPPING_FLAT, TAX_STATES, TAX_RATE } from "@/lib/money";
 
 /** state = 2-letter shipping destination, once known; omit for a pre-address estimate. */
 export function useCartTotals(state?: string) {
