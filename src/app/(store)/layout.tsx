@@ -3,6 +3,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import Navbar from "@/components/store/Navbar";
 import Footer from "@/components/store/Footer";
 import SalePriceProvider from "@/components/store/SalePriceProvider";
+import { siteBaseUrl } from "@/lib/seo";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -18,7 +19,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sarastradingpost.com"),
+  // Was hardcoded to sarastradingpost.com, a domain nobody owns yet — every
+  // OG/canonical URL Next.js generated pointed nowhere. Resolves to the real
+  // Vercel URL until a custom domain is attached (see lib/seo.ts).
+  metadataBase: new URL(siteBaseUrl()),
   title: {
     default: "Sara's Trading Post — Authentic Luxury Beauty, Resold with Love",
     template: "%s · Sara's Trading Post",
