@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { isRateLimited } from "@/lib/rateLimit";
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -9,6 +10,11 @@ function getStripe() {
 }
 
 export async function GET(req: NextRequest) {
+  // Public, unauthenticated, reveals email/amount on a match — cap guessing.
+  if (isRateLimited(req, "track-order", 20, 60_000)) {
+    return NextResponse.json({ error: "Too many requests, please try again shortly." }, { status: 429 });
+  }
+
   const orderId = req.nextUrl.searchParams.get("id")?.trim();
   if (!orderId) return NextResponse.json({ error: "Order ID required" }, { status: 400 });
 
@@ -29,11 +35,15 @@ export async function GET(req: NextRequest) {
       customerEmail = pi.receipt_email ?? "";
       created = pi.created;
     } else {
-      // Search by metadata order id or just return a helpful message
-      const pis = await stripe.paymentIntents.list({ limit: 100 });
-      const match = pis.data.find(
-        (pi) => pi.metadata?.order_id === orderId
-      );
+      // Search API, not list+filter — a list only sees the most recent 100
+      // PaymentIntents across the whole account and silently "loses" older
+      // orders once the store has more traffic than that.
+      const safeId = orderId.replace(/['\\]/g, "");
+      const result = await stripe.paymentIntents.search({
+        query: `metadata['order_id']:'${safeId}'`,
+        limit: 1,
+      });
+      const match = result.data[0];
       if (match) {
         status = match.status;
         amount = match.amount / 100;
