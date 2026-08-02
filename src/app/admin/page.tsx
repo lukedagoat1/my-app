@@ -5,6 +5,7 @@ import { products, type Product } from "@/lib/products";
 import type { StockEntry } from "@/lib/stock";
 import ListingsTab from "./ListingsTab";
 import OrdersTab from "./OrdersTab";
+import Logo from "@/components/store/Logo";
 
 const WINE = "#7a1e2e";
 
@@ -25,7 +26,7 @@ function LoginScreen({ onLogin }: { onLogin: (pw: string) => void }) {
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: 24 }}>
       <div style={{ width: "100%", maxWidth: 400, background: "#fff", borderRadius: 20, padding: "40px 36px", boxShadow: "0 4px 32px rgba(0,0,0,.10)" }}>
         <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <div style={{ fontSize: 32, marginBottom: 10 }}>🌸</div>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}><Logo className="h-12 w-12" /></div>
           <h1 style={{ fontWeight: 800, fontSize: 22, color: WINE, margin: 0 }}>Sara&apos;s Trading Post</h1>
           <p style={{ color: "#777", fontSize: 14, marginTop: 6 }}>Admin Panel</p>
         </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mail, ShieldCheck, Truck, BadgeCheck, Star } from "lucide-react";
+import Logo from "./Logo";
 
 export default function Footer() {
   return (
@@ -7,7 +8,7 @@ export default function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-4">
         <div className="md:col-span-1">
           <div className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--s-wine)] text-[var(--s-gold-soft)] font-display text-lg font-bold">S</span>
+            <Logo className="h-9 w-9 shrink-0" />
             <span className="font-display text-[17px] font-bold text-[var(--s-ink)]">Sara&apos;s Trading Post</span>
           </div>
           <p className="mt-4 text-sm leading-relaxed text-[var(--s-ink-soft)]">

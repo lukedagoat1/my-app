@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ShoppingBag, Menu, X, Search, Sparkles } from "lucide-react";
 import { useCartCount } from "@/lib/cart";
+import Logo from "./Logo";
 
 const links = [
   { href: "/shop", label: "Shop All" },
@@ -69,9 +70,7 @@ export default function Navbar() {
           </button>
 
           <Link href="/" className="flex shrink-0 items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--s-wine)] text-[var(--s-gold-soft)] font-display text-lg font-bold">
-              S
-            </span>
+            <Logo className="h-9 w-9 shrink-0" />
             <span className="hidden sm:flex flex-col leading-none">
               <span className="font-display text-[17px] font-bold text-[var(--s-ink)]">Sara&apos;s Trading Post</span>
               <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--s-ink-soft)]">Authentic Luxury Beauty</span>
