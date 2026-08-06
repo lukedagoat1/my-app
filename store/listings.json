@@ -1439,6 +1439,22 @@
       "condition": "New",
       "blurb": "An unforgettable signature scent, beautifully composed.",
       "bestseller": false
+    },
+    {
+      "id": "sara-mluciuio",
+      "title": "Estee Lauder The BROW MULTI-TASKER Expert Sourcils 3 in 1 Pencil Powder Brush",
+      "brand": "Estee Lauder",
+      "category": "Makeup",
+      "sub": "Eyes",
+      "price": 24.99,
+      "compareAt": 35.59,
+      "image": "https://i.ebayimg.com/images/g/nN8AAOSw9LFhifpP/s-l800.jpg",
+      "rating": 5,
+      "reviews": 0,
+      "sold": 0,
+      "condition": "New",
+      "blurb": "Richly pigmented shades that blend like a dream.",
+      "bestseller": false
     }
   ],
   "hidden": []
