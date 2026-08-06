@@ -3167,6 +3167,22 @@
       "condition": "New",
       "blurb": "An unforgettable signature scent, beautifully composed.",
       "bestseller": false
+    },
+    {
+      "id": "sara-hgw7zf5y",
+      "title": "Peripera Ink Airy Velvet High Pigmentation Lip Tint - Center Peach",
+      "brand": "Peripera",
+      "category": "Makeup",
+      "sub": "Lips",
+      "price": 7.99,
+      "compareAt": 11.88,
+      "image": "https://i.ebayimg.com/images/g/E0AAAeSw1Clp9rKC/s-l800.jpg",
+      "rating": 5,
+      "reviews": 0,
+      "sold": 0,
+      "condition": "New",
+      "blurb": "Long-wear color with a luxurious, comfortable finish.",
+      "bestseller": false
     }
   ],
   "hidden": []
