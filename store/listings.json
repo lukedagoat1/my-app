@@ -79,6 +79,22 @@
       "condition": "New",
       "blurb": "A natural flush of buildable, radiant color.",
       "bestseller": false
+    },
+    {
+      "id": "sara-mme8kem6",
+      "title": "BareMinerals Complexion Rescue Tinted Hydrating Gel Cream 01 Opal 1.18Oz",
+      "brand": "BareMinerals",
+      "category": "Skincare",
+      "sub": "Serums & Treatments",
+      "price": 39,
+      "compareAt": 63.53,
+      "image": "https://i.ebayimg.com/images/g/OEwAAeSwv5Npuh8W/s-l800.jpg",
+      "rating": 5,
+      "reviews": 0,
+      "sold": 0,
+      "condition": "New",
+      "blurb": "Targeted actives that visibly transform skin.",
+      "bestseller": false
     }
   ],
   "hidden": []
