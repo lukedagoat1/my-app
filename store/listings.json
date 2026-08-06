@@ -2047,6 +2047,22 @@
       "condition": "New",
       "blurb": "An unforgettable signature scent, beautifully composed.",
       "bestseller": false
+    },
+    {
+      "id": "sara-6ndv5w6f",
+      "title": "Estee Lauder Re-Nutriv Ultimate Diamond Transformative Brilliance Serum 1oz/30ml",
+      "brand": "Estee Lauder",
+      "category": "Skincare",
+      "sub": "Serums & Treatments",
+      "price": 159.95,
+      "compareAt": 240.83,
+      "image": "https://i.ebayimg.com/images/g/-~wAAeSwURVqK4On/s-l800.jpg",
+      "rating": 5,
+      "reviews": 0,
+      "sold": 0,
+      "condition": "New",
+      "blurb": "Targeted actives that visibly transform skin.",
+      "bestseller": false
     }
   ],
   "hidden": []
