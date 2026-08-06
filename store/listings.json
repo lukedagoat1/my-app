@@ -1215,6 +1215,22 @@
       "condition": "New & Sealed",
       "blurb": "A beautifully scented accent for any room.",
       "bestseller": false
+    },
+    {
+      "id": "sara-sfk6ytkx",
+      "title": "BareMinerals Original Mineral Veil Pressed Setting Powder in Translucent",
+      "brand": "BareMinerals",
+      "category": "Makeup",
+      "sub": "Foundation & Powder",
+      "price": 16.99,
+      "compareAt": 24.85,
+      "image": "https://i.ebayimg.com/images/g/5AMAAeSwmhdpuh0D/s-l800.jpg",
+      "rating": 5,
+      "reviews": 0,
+      "sold": 0,
+      "condition": "New",
+      "blurb": "Flawless, skin-true coverage that lasts all day.",
+      "bestseller": false
     }
   ],
   "hidden": []
