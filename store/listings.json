@@ -2655,6 +2655,22 @@
       "condition": "New",
       "blurb": "An unforgettable signature scent, beautifully composed.",
       "bestseller": false
+    },
+    {
+      "id": "sara-18s89pdf",
+      "title": "Norwex Rejuvenating Serum 30 mL / 1 FL Oz",
+      "brand": "Norwex",
+      "category": "Skincare",
+      "sub": "Serums & Treatments",
+      "price": 70,
+      "compareAt": 112.81,
+      "image": "https://i.ebayimg.com/images/g/Oh0AAeSwripqLGxm/s-l800.jpg",
+      "rating": 5,
+      "reviews": 0,
+      "sold": 0,
+      "condition": "New",
+      "blurb": "Targeted actives that visibly transform skin.",
+      "bestseller": false
     }
   ],
   "hidden": []
