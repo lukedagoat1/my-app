@@ -2687,6 +2687,22 @@
       "condition": "New",
       "blurb": "Flawless, skin-true coverage that lasts all day.",
       "bestseller": false
+    },
+    {
+      "id": "sara-e169d1si",
+      "title": "Estee Lauder Micro Essence Treatment Lotion with Bio-Ferment 6.7oz/200mL",
+      "brand": "Estee Lauder",
+      "category": "Skincare",
+      "sub": "Moisturizers & Creams",
+      "price": 135,
+      "compareAt": 181.93,
+      "image": "https://i.ebayimg.com/images/g/h64AAeSwBhJqLISA/s-l800.jpg",
+      "rating": 5,
+      "reviews": 0,
+      "sold": 0,
+      "condition": "New",
+      "blurb": "Deeply hydrating care for soft, supple skin.",
+      "bestseller": false
     }
   ],
   "hidden": []
