@@ -1823,6 +1823,22 @@
       "condition": "New & Sealed",
       "blurb": "An unforgettable signature scent, beautifully composed.",
       "bestseller": false
+    },
+    {
+      "id": "sara-cqpfdbui",
+      "title": "Chanel Les Pinceaux Collection 3 Essential BRUSHES Leather Case 135 Immortelle",
+      "brand": "CHANEL",
+      "category": "Makeup",
+      "sub": "Tools & Brushes",
+      "price": 164.95,
+      "compareAt": 217.31,
+      "image": "https://i.ebayimg.com/images/g/xTIAAeSwFKNqcQI-/s-l800.jpg",
+      "rating": 5,
+      "reviews": 0,
+      "sold": 0,
+      "condition": "New",
+      "blurb": "Pro-grade tools for an effortless application.",
+      "bestseller": false
     }
   ],
   "hidden": []
