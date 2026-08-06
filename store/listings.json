@@ -2159,6 +2159,22 @@
       "condition": "Rare / Discontinued",
       "blurb": "Long-wear color with a luxurious, comfortable finish.",
       "bestseller": false
+    },
+    {
+      "id": "sara-7kgxu8ny",
+      "title": "Estée Lauder Advanced Night Repair Synchronized Multi-Recovery Complex SERUM 1oz",
+      "brand": "Estee Lauder",
+      "category": "Skincare",
+      "sub": "Serums & Treatments",
+      "price": 43.99,
+      "compareAt": 68.75,
+      "image": "https://i.ebayimg.com/images/g/XroAAeSw9SNqLc3J/s-l800.jpg",
+      "rating": 5,
+      "reviews": 0,
+      "sold": 0,
+      "condition": "New",
+      "blurb": "Targeted actives that visibly transform skin.",
+      "bestseller": false
     }
   ],
   "hidden": []
