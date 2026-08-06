@@ -7,7 +7,7 @@ import { Check, Plus, SlidersHorizontal } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { useCart, money } from "@/lib/cart";
 import { StarRating, ProductImage } from "./bits";
-import { useSalePrices, useStock } from "./SalePriceProvider";
+import { useSalePrices, useBasePrices, useStock } from "./SalePriceProvider";
 import { Tilt, flyToCart } from "./fx";
 
 export default function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
@@ -16,12 +16,14 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
   const imgRef = useRef<HTMLDivElement>(null);
   const [added, setAdded] = useState(false);
   const salePrices = useSalePrices();
+  const basePrices = useBasePrices();
   const stockQtys = useStock();
+  const basePrice = basePrices[product.id] ?? product.price;
   const saleOverride = salePrices[product.id];
   const stockQty = stockQtys[product.id];          // undefined = untracked, 0 = sold out
   const isSoldOut = stockQty === 0;
-  const effectivePrice = saleOverride && saleOverride < product.price ? saleOverride : product.price;
-  const effectiveCompareAt = saleOverride && saleOverride < product.price ? product.price : product.compareAt;
+  const effectivePrice = saleOverride && saleOverride < basePrice ? saleOverride : basePrice;
+  const effectiveCompareAt = saleOverride && saleOverride < basePrice ? basePrice : product.compareAt;
   const discount = Math.round((1 - effectivePrice / effectiveCompareAt) * 100);
   const hasVariation = !!product.variation;
 
@@ -64,7 +66,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
               Bestseller
             </span>
           )}
-          {!isSoldOut && saleOverride && saleOverride < product.price && (
+          {!isSoldOut && saleOverride && saleOverride < basePrice && (
             <span className="rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
               SALE
             </span>
@@ -104,7 +106,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
         </h3>
         <div className="mt-3 flex items-end justify-between">
           <div className="flex items-baseline gap-2">
-            <span className={`font-display text-lg font-bold ${saleOverride && saleOverride < product.price ? "text-red-600" : "text-[var(--s-ink)]"}`}>
+            <span className={`font-display text-lg font-bold ${saleOverride && saleOverride < basePrice ? "text-red-600" : "text-[var(--s-ink)]"}`}>
               {money(effectivePrice)}
             </span>
             {effectiveCompareAt > effectivePrice && (

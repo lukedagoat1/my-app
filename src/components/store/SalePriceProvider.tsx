@@ -6,14 +6,16 @@ import type { Product } from "@/lib/products";
 export type SalePrices = Record<string, number>;
 export type StockQtys = Record<string, number | undefined>;
 
-interface StoreData { prices: SalePrices; stock: StockQtys; custom?: Product[]; hidden?: string[] }
+interface StoreData { prices: SalePrices; basePrices?: SalePrices; stock: StockQtys; custom?: Product[]; hidden?: string[] }
 
 const PriceCtx = createContext<SalePrices>({});
+const BasePriceCtx = createContext<SalePrices>({});
 const StockCtx = createContext<StockQtys>({});
 const CustomCtx = createContext<Product[]>([]);
 const HiddenCtx = createContext<string[]>([]);
 
 export function useSalePrices()     { return useContext(PriceCtx); }
+export function useBasePrices()     { return useContext(BasePriceCtx); }
 export function useStock()          { return useContext(StockCtx); }
 export function useCustomProducts() { return useContext(CustomCtx); }
 export function useHiddenIds()      { return useContext(HiddenCtx); }
@@ -30,13 +32,15 @@ export default function SalePriceProvider({ children }: { children: React.ReactN
 
   return (
     <PriceCtx.Provider value={data.prices ?? {}}>
-      <StockCtx.Provider value={data.stock ?? {}}>
-        <CustomCtx.Provider value={data.custom ?? []}>
-          <HiddenCtx.Provider value={data.hidden ?? []}>
-            {children}
-          </HiddenCtx.Provider>
-        </CustomCtx.Provider>
-      </StockCtx.Provider>
+      <BasePriceCtx.Provider value={data.basePrices ?? {}}>
+        <StockCtx.Provider value={data.stock ?? {}}>
+          <CustomCtx.Provider value={data.custom ?? []}>
+            <HiddenCtx.Provider value={data.hidden ?? []}>
+              {children}
+            </HiddenCtx.Provider>
+          </CustomCtx.Provider>
+        </StockCtx.Provider>
+      </BasePriceCtx.Provider>
     </PriceCtx.Provider>
   );
 }

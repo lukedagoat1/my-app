@@ -10,7 +10,7 @@ import { useCart, money } from "@/lib/cart";
 import { StarRating, ProductImage } from "@/components/store/bits";
 import ProductCard from "@/components/store/ProductCard";
 import { reviews } from "@/lib/reviews";
-import { useSalePrices, useStock } from "@/components/store/SalePriceProvider";
+import { useSalePrices, useBasePrices, useStock } from "@/components/store/SalePriceProvider";
 import { Tilt, flyToCart } from "@/components/store/fx";
 
 export default function ProductDetail({ product, related }: { product: Product; related: Product[] }) {
@@ -21,12 +21,14 @@ export default function ProductDetail({ product, related }: { product: Product; 
   const [variant, setVariant] = useState<string | null>(null);
   const [needsVariant, setNeedsVariant] = useState(false);
   const salePrices = useSalePrices();
+  const basePrices = useBasePrices();
   const stockQtys = useStock();
+  const basePrice = basePrices[product.id] ?? product.price;
   const saleOverride = salePrices[product.id];
   const stockQty = stockQtys[product.id];
   const isSoldOut = stockQty === 0;
-  const effectivePrice = saleOverride && saleOverride < product.price ? saleOverride : product.price;
-  const effectiveCompareAt = saleOverride && saleOverride < product.price ? product.price : product.compareAt;
+  const effectivePrice = saleOverride && saleOverride < basePrice ? saleOverride : basePrice;
+  const effectiveCompareAt = saleOverride && saleOverride < basePrice ? basePrice : product.compareAt;
   const discount = Math.round((1 - effectivePrice / effectiveCompareAt) * 100);
   const saving = effectiveCompareAt - effectivePrice;
   const productReviews = reviews.slice(0, 3);
@@ -102,7 +104,7 @@ export default function ProductDetail({ product, related }: { product: Product; 
               </span>
             ) : (
               <>
-                <span className={`font-display text-4xl font-bold ${saleOverride && saleOverride < product.price ? "text-red-600" : "text-[var(--s-ink)]"}`}>
+                <span className={`font-display text-4xl font-bold ${saleOverride && saleOverride < basePrice ? "text-red-600" : "text-[var(--s-ink)]"}`}>
                   {money(effectivePrice)}
                 </span>
                 {effectiveCompareAt > effectivePrice && (

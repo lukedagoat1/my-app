@@ -54,6 +54,7 @@ function LoginScreen({ onLogin }: { onLogin: (pw: string) => void }) {
 function PricesTab({ password, allProducts }: { password: string; allProducts: Product[] }) {
   const products = allProducts;
   const [prices, setPrices] = useState<Record<string, string>>({});
+  const [basePrices, setBasePrices] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -65,18 +66,37 @@ function PricesTab({ password, allProducts }: { password: string; allProducts: P
         for (const [id, p] of Object.entries(d)) s[id] = String(p);
         setPrices(s);
       }).catch(() => {});
+    fetch("/api/admin/base-prices", { headers: { "x-admin-password": password } })
+      .then(r => r.json())
+      .then((d: Record<string, number>) => {
+        const s: Record<string, string> = {};
+        for (const [id, p] of Object.entries(d)) s[id] = String(p);
+        setBasePrices(s);
+      }).catch(() => {});
   }, [password]);
+
+  // Regular Price column: shows the saved override, or today's real price if
+  // she's never touched it — so every row is pre-filled with a real number.
+  function regularOf(p: Product) { return basePrices[p.id] ?? String(p.price); }
 
   async function save() {
     setSaving(true); setMsg("");
-    const body: Record<string, number> = {};
+    const salesBody: Record<string, number> = {};
     for (const [id, val] of Object.entries(prices)) {
       const n = parseFloat(val);
-      if (!isNaN(n) && n > 0) body[id] = n;
+      if (!isNaN(n) && n > 0) salesBody[id] = n;
     }
-    const res = await fetch("/api/admin/prices", { method: "PUT", headers: { "Content-Type": "application/json", "x-admin-password": password }, body: JSON.stringify(body) });
+    const baseBody: Record<string, number> = {};
+    for (const p of products) {
+      const n = parseFloat(regularOf(p));
+      if (!isNaN(n) && n > 0 && n !== p.price) baseBody[p.id] = n;
+    }
+    const [r1, r2] = await Promise.all([
+      fetch("/api/admin/prices", { method: "PUT", headers: { "Content-Type": "application/json", "x-admin-password": password }, body: JSON.stringify(salesBody) }),
+      fetch("/api/admin/base-prices", { method: "PUT", headers: { "Content-Type": "application/json", "x-admin-password": password }, body: JSON.stringify(baseBody) }),
+    ]);
     setSaving(false);
-    setMsg(res.ok ? "✓ Saved! Prices are now live." : "✗ Error saving. Try again.");
+    setMsg(r1.ok && r2.ok ? "✓ Saved! Prices are now live." : "✗ Error saving. Try again.");
     setTimeout(() => setMsg(""), 3500);
   }
 
@@ -95,7 +115,7 @@ function PricesTab({ password, allProducts }: { password: string; allProducts: P
         </div>
       </div>
 
-      <InfoBanner>Enter a sale price <em>lower</em> than the regular price and click Save. Leave blank to remove the sale.</InfoBanner>
+      <InfoBanner><strong>Regular Price</strong> is what the product normally sells for — change it anytime, it's saved instantly. <strong>Sale Price</strong> is optional and only for temporary discounts: enter a price <em>lower</em> than Regular and it shows as a sale; leave it blank the rest of the time.</InfoBanner>
 
       {Object.entries(grouped).map(([cat, prods]) => (
         <div key={cat} style={{ marginBottom: 32 }}>
@@ -106,16 +126,18 @@ function PricesTab({ password, allProducts }: { password: string; allProducts: P
                 <tr style={{ background: "#faf6f2", borderBottom: "1px solid #e8e0d8" }}>
                   <th style={th}></th>
                   <th style={{ ...th, textAlign: "left" }}>Product</th>
-                  <th style={{ ...th, textAlign: "right" }}>Regular</th>
+                  <th style={{ ...th, textAlign: "right" }}>Regular Price</th>
                   <th style={{ ...th, textAlign: "right" }}>Sale Price</th>
                   <th style={{ ...th, width: 36 }}></th>
                 </tr>
               </thead>
               <tbody>
                 {prods.map((p, i) => {
+                  const regVal = regularOf(p);
+                  const regN = parseFloat(regVal) || p.price;
                   const val = prices[p.id] ?? "";
                   const n = parseFloat(val);
-                  const onSale = !isNaN(n) && n > 0 && n < p.price;
+                  const onSale = !isNaN(n) && n > 0 && n < regN;
                   return (
                     <tr key={p.id} style={{ borderTop: i > 0 ? "1px solid #f0ebe4" : undefined, background: onSale ? "#fff5f7" : undefined }}>
                       <td style={{ padding: "8px 14px", width: 48 }}>
@@ -125,12 +147,17 @@ function PricesTab({ password, allProducts }: { password: string; allProducts: P
                       <td style={{ padding: "8px 14px" }}>
                         <strong style={{ display: "block", color: "#111" }}>{p.brand}</strong>
                         <span style={{ color: "#777", display: "block", maxWidth: 340, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.title}</span>
-                        {onSale && <span style={{ background: "#e53935", color: "#fff", fontSize: 10, fontWeight: 700, padding: "1px 6px", borderRadius: 4, display: "inline-block", marginTop: 2 }}>SALE −{Math.round((1 - n / p.price) * 100)}%</span>}
+                        {onSale && <span style={{ background: "#e53935", color: "#fff", fontSize: 10, fontWeight: 700, padding: "1px 6px", borderRadius: 4, display: "inline-block", marginTop: 2 }}>SALE −{Math.round((1 - n / regN) * 100)}%</span>}
                       </td>
-                      <td style={{ padding: "8px 14px", textAlign: "right", fontWeight: 600, whiteSpace: "nowrap" }}>${p.price.toFixed(2)}</td>
                       <td style={{ padding: "8px 10px", textAlign: "right" }}>
                         <span style={{ color: "#aaa", fontSize: 12 }}>$</span>
-                        <input type="number" step="0.01" min="0.01" max={p.price - 0.01} placeholder="—" value={val}
+                        <input type="number" step="0.01" min="0.01" value={regVal}
+                          onChange={e => setBasePrices(prev => ({ ...prev, [p.id]: e.target.value }))}
+                          style={{ width: 76, padding: "6px 8px", borderRadius: 8, border: "1.5px solid #e2d8d0", fontSize: 13, outline: "none", fontWeight: 600, textAlign: "right" }} />
+                      </td>
+                      <td style={{ padding: "8px 10px", textAlign: "right" }}>
+                        <span style={{ color: "#aaa", fontSize: 12 }}>$</span>
+                        <input type="number" step="0.01" min="0.01" max={regN - 0.01} placeholder="—" value={val}
                           onChange={e => setPrices(prev => ({ ...prev, [p.id]: e.target.value }))}
                           style={{ width: 72, padding: "6px 8px", borderRadius: 8, border: onSale ? "1.5px solid #e53935" : "1.5px solid #e2d8d0", fontSize: 13, outline: "none", background: onSale ? "#fff5f7" : "#fff", color: onSale ? "#c00" : "#111", fontWeight: onSale ? 700 : 400, textAlign: "right" }} />
                       </td>

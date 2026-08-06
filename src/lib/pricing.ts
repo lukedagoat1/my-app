@@ -1,6 +1,7 @@
 import { getProduct } from "@/lib/products";
 import { readListings } from "@/lib/listings";
 import { readSalePrices } from "@/lib/sale-prices";
+import { readBasePrices } from "@/lib/base-prices";
 import { getStockQtys } from "@/lib/stock";
 import { SHIPPING_THRESHOLD, SHIPPING_FLAT, TAX_RATE, TAX_STATES } from "@/lib/money";
 
@@ -10,9 +11,10 @@ import { SHIPPING_THRESHOLD, SHIPPING_FLAT, TAX_RATE, TAX_STATES } from "@/lib/m
  * what a Stripe charge is created for.
  */
 export async function priceOrder(items: { id: string; qty: number }[], state: string) {
-  const [listings, salePrices, stock] = await Promise.all([
+  const [listings, salePrices, basePrices, stock] = await Promise.all([
     readListings(),
     readSalePrices(),
+    readBasePrices(),
     getStockQtys(),
   ]);
 
@@ -24,8 +26,9 @@ export async function priceOrder(items: { id: string; qty: number }[], state: st
     if (listings.hidden.includes(id)) throw new Error(`Product not available: ${id}`);
     const available = stock[id];
     if (available !== undefined && available < qty) throw new Error(`Not enough stock: ${id}`);
+    const base = basePrices[id] ?? product.price;
     const sale = salePrices[id];
-    const price = sale && sale < product.price ? sale : product.price;
+    const price = sale && sale < base ? sale : base;
     subtotal += price * qty;
   }
   subtotal = +subtotal.toFixed(2);
