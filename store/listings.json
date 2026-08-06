@@ -1583,6 +1583,22 @@
       "condition": "New & Sealed",
       "blurb": "Flawless, skin-true coverage that lasts all day.",
       "bestseller": false
+    },
+    {
+      "id": "sara-f29m86fv",
+      "title": "Test Product Brush",
+      "brand": "CHANEL",
+      "category": "Makeup",
+      "sub": "Tools & Brushes",
+      "price": 29.99,
+      "compareAt": 39.99,
+      "image": "https://i.ebayimg.com/images/g/S3MAAeSwT9VqOpOC/s-l800.jpg",
+      "rating": 5,
+      "reviews": 0,
+      "sold": 0,
+      "condition": "New",
+      "blurb": "test",
+      "bestseller": false
     }
   ],
   "hidden": []
