@@ -639,6 +639,22 @@
       "condition": "Rare / Discontinued",
       "blurb": "Flawless, skin-true coverage that lasts all day.",
       "bestseller": false
+    },
+    {
+      "id": "sara-dd25bs3l",
+      "title": "BareMinerals Complexion Rescue Tinted Moisturizer Mineral SPF 30 Cashew 3.5",
+      "brand": "BareMinerals",
+      "category": "Skincare",
+      "sub": "Serums & Treatments",
+      "price": 39,
+      "compareAt": 55.91,
+      "image": "https://i.ebayimg.com/images/g/KtYAAeSwYFlpuhUj/s-l800.jpg",
+      "rating": 5,
+      "reviews": 0,
+      "sold": 0,
+      "condition": "New",
+      "blurb": "Targeted actives that visibly transform skin.",
+      "bestseller": false
     }
   ],
   "hidden": []
